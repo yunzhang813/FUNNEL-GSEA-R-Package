@@ -1,0 +1,102 @@
+---
+title: "FUNNEL-GSEA R Package Vignette"
+author: "Yun Zhang"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{FUNNEL-GSEA R Package Vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+                      
+# Introduction
+
+```{r package}
+library(FUNNEL)
+```
+
+This package is built for ... In this vignette, I will introduce two ways of doing the FUNNEL test. One way is through a wrapper function with will take the raw cleaned data sets as inputs and run the whole testing procedure automatically. Secondly, I will guide the users to go through the testing framwork step-by-step, so that the users may have more flexibity and control over their GSEA tests. 
+
+# One-step test
+
+Firstly, let's load in the data.
+```{r data}
+data("sampleData")
+```
+The one-step test is contained in the function called `FUNNEL.GSEA`. It takes the raw and cleaned data as input and do the data formating and run the whole testing procedure automatically. For details of data formating, please see `help(sampleData)`. (It will take about 5~10 minutes to run.)
+```{r, onestep, cache=TRUE}
+wrapper <- FUNNEL.GSEA(X, time, geneset)
+```
+
+## Some post-analysis tools
+
+* If the users are interested in some particular genes, they can gether them as a vector in 'genesOfInterest' and use the following function based on the one-step testing results.
+```{r}
+est.weights <- weightPerGene(wrapper$weight.list, genesOfInterest=geneset[[1]])
+```
+
+* Also, the users can use the previous results to plot the non-zero weights for a partucular gene set. For example, look at the estimated non-zero weights in the second gene set. 
+```{r, weightplot, fig.width=6, fig.height=12}
+plotWeight(wrapper$weight.list, geneset.index=2)
+```
+
+# Step-by-step analyses
+
+# Session Info
+
+```{r}
+sessionInfo()
+```
+
+# The following is template
+
+Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+
+- Never uses retina figures
+- Has a smaller default figure size
+- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+
+## Vignette Info
+
+Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+
+## Styles
+
+The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+
+    output: 
+      rmarkdown::html_vignette:
+        css: mystyles.css
+
+## Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))
