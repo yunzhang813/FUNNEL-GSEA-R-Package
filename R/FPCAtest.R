@@ -1,4 +1,4 @@
-## Required packages: MASS, akima
+## Required packages: MASS (ginv()), akima (interpp())
 
 FPCAtest = function(y,tt,rr,H0="mean",B=1000,p.adjust.methods="BH",FDR=0.05,miss=0,
            delta="auto",bwxcov=c(0,0),ngrid=51,ngrid1=30,kern="gauss",error=1,
@@ -403,7 +403,7 @@ gcv_mullwlsn = function(tt,ngrid=30,miss=1,error=1,kern=c("gauss","epan","rect",
                #require package akima for 2-D interpolation
                #it seems to me that only linear interpolation works
                #do not allow extrapolation
-  require(akima)
+               ## require(akima)
                newxcov =interpp(o21[,1],o21[,2],xcov,tpairn[1,],tpairn[2,])$z
 
                rm(xcov)
@@ -566,7 +566,6 @@ lwls = function(bw,kern=c("gauss","epan","rect","quar"),nwe=0,npoly=nder+1,nder=
       stop("Degree of polynomial should be no less than the order of derivative!")
 
    kern = kern[1]
-   require(MASS)
    actobs = which(win!=0)
    xin = xin[actobs]
    yin = yin[actobs]
@@ -672,7 +671,7 @@ minb = function(x,numPoints=2)
 
 mullwlsk = function(bw,kern=c("gauss","epan","rect","quar"),xin,yin,win=rep(1,length(xin)),out1,out2,count=NULL)
 {
-    require(MASS) #for generalized inverse
+    ## require(MASS)
     kern = kern[1]
     active = which(win!= 0)
     xin = xin[,active]

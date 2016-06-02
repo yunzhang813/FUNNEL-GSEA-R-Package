@@ -1,5 +1,5 @@
-\name{weightedRankSumTestWithCorrelation}
-\alias{weightedRankSumTestWithCorrelation}
+\name{wMWUTest}
+\alias{wMWUTest}
 
 \title{
 Weighted Rank Sum Test with Correlation
@@ -10,7 +10,7 @@ This is an extension of the two-sample Mann-Whitney U test (a.k.a. Wilcoxon rank
 }
 
 \usage{
-weightedRankSumTestWithCorrelation(index, statistics, weight=NULL, correlation=0, df=Inf)
+wMWUTest(index, statistics, weight=NULL, correlation=0, df=Inf)
 }
 
 \arguments{
@@ -61,9 +61,9 @@ index <- 1:10
 stat[index] <- stat[1:10]+1
 weight <- runif(length(index), 0, 1)
 
-weightedRankSumTestWithCorrelation(index, stat)
-weightedRankSumTestWithCorrelation(index, stat, correlation=0.1)
-weightedRankSumTestWithCorrelation(index, stat, weight=weight, correlation=0.1)
+wMWUTest(index, stat)
+wMWUTest(index, stat, correlation=0.1)
+wMWUTest(index, stat, weight=weight, correlation=0.1)
 
 ## Wilcoxon rank sum test
 group <- rep(2,100)
@@ -79,5 +79,5 @@ rankSumTestWithCorrelation(index, stat, correlation=0.1)
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-%\keyword{ weightedRankSumTestWithCorrelation }
+%\keyword{ wMWUTest }
 %\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

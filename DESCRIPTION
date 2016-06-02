@@ -1,13 +1,13 @@
 Package: FUNNEL
 Type: Package
 Title: FUNNEL-GSEA: FUNctioNal ELastic-net Regression in time-course Gene Set Enrichment Analysis
-Version: 0.0.1
-Date: 2016-06-1
-Author: Yun Zhang
+Version: 0.0.2
+Date: 2016-06-2
+Author: Yun Zhang, Juilee Thakar, Xing Qiu
 Maintainer: Yun Zhang <yun_zhang@urmc.rochester.edu>; Xing Qiu <xing_qiu@urmc.rochester.edu>
 Description: This is a statistical inference framework for GSEA based on FUNctioNal ELastic-net regression, which utilizes the temporal information based on functional principal component analysis (FPCA), and disentangles the effects of overlapping genes by a functional extension of the elastic-net regression, and then perform hypothesis testing for gene sets by an extension of Mann-Whitney U test which is based on weighted rank sums computed from correlated observations.
 Depends: R (>= 3.2.0)
-Imports: limma, fda, quadrupen, pheatmap, RColorBrewer
+Imports: MASS, akima, limma, fda, quadrupen, pheatmap, RColorBrewer
 VignetteBuilder: rmarkdown
 Suggests: knitr, rmarkdown, RUnit, BiocGenerics
 License: GPL-3

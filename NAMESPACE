@@ -2,5 +2,7 @@ importFrom(fda, create.bspline.basis, fdPar, smooth.basis, pca.fd, fd, inprod)
 importFrom(quadrupen, elastic.net)
 importFrom(pheatmap, pheatmap)
 importFrom(RColorBrewer, brewer.pal)
+importFrom(MASS, ginv)
+importFrom(akima, interpp)
 
-exportPattern(FUNNEL.GSEA, weightPerGene, plotWeight)
+exportPattern(FUNNEL.GSEA, weightPerGene, plotWeight, equiv.regression, wMWUTest)
