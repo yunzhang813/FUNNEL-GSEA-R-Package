@@ -4,5 +4,8 @@ importFrom(pheatmap, pheatmap)
 importFrom(RColorBrewer, brewer.pal)
 importFrom(MASS, ginv)
 importFrom(akima, interpp)
+importFrom("grDevices", "colorRampPalette")
+importFrom("graphics", "hist")
+importFrom("stats", "cor", "dnorm", "p.adjust", "pchisq", "pt", "splinefun")
 
 exportPattern(FUNNEL.GSEA, weightPerGene, plotWeight, equiv.regression, wMWUTest)
