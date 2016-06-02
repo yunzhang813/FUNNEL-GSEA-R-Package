@@ -1,4 +1,3 @@
-weightPerGene <- function(weight.list, genesOfInterest)
 \name{weightPerGene}
 \alias{weightPerGene}
 
