@@ -17,6 +17,7 @@ FUNNEL.GSEA(X, time, geneset, lambda=10^-3.5, rr=rep(1,length(time)), selection_
   \item{time}{..}
   \item{geneset}{..}
   \item{lambda}{..} 
+  \item{rr}{..} 
   \item{selection_k}{..} 
   \item{FVE_threshold}{..} 
   \item{nharm}{..} 
