@@ -190,7 +190,7 @@ getWeightMatrix <- function(fdexpr, geneset, nharm=3, centerfns=FALSE, equiv.thr
       },
       error = function(err){
         if(verbose==TRUE){
-          message("Uniform weighting is applied when elastic net fails.")
+          message(paste("Uniform weighting is applied because elastic-net regression failed for gene", gene.i, "in gene sets", paste(index, collapse=", ")))
           message(paste("Original error message:", err)) 
         } 
       })
