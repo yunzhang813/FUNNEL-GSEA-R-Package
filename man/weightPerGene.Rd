@@ -1,11 +1,14 @@
 \name{weightPerGene}
 \alias{weightPerGene}
 
-\title{Get weight ...
+\title{Get weights (a.k.a. empirical gene set membership) of a list of
+  genes of interest from a computed weight list.
 }
 
 \description{
-  A long description.
+  This is a convenience function that extracts weights (a.k.a. empirical
+  gene set membership) of a list of genes of interest from a weight
+  list, which is typically computed by \code{FUNNEL.GSEA}.
 }
 
 \usage{
@@ -13,20 +16,23 @@ weightPerGene(weight.list, genesOfInterest)
 }
 
 \arguments{
-  \item{weight.list}{..}
-  \item{genesOfInterest}{..}
+  \item{weight.list}{A list of weights (a.k.a. empirical gene set
+  membership) computed from the elastic-net regression. }
+  \item{genesOfInterest}{A list of genes of interest. }
 }
 
-\details{
-  more details than the description above
-}
+%% \details{
+%%   more details than the description above
+%% }
 
 \value{
-  A list with ...
+  A list of weights for the pre-specified genes.
 }
 
 \references{
-Our paper here. (2016). \emph{Submitted to Nucleic Acids Research}.
+  Yun Zhang, Juilee Thakar, Xing Qiu (2016) FUNNEL-GSEA: FUNctioNal ELastic-net
+  Regression in time-course Gene Set Enrichment Analysis, submitted to
+  Nucleic Acids Research.
 }
 
 \author{
@@ -42,10 +48,20 @@ Our paper here. (2016). \emph{Submitted to Nucleic Acids Research}.
 %% \seealso{
 %% }
 
-\examples{}
+\examples{
+
+## Load the sample data
+data("H3N2-Subj1")
+
+## It takes about 10 minutes to run on my Laptop; YMMV.
+\dontrun{t1 <- system.time(results1 <- FUNNEL.GSEA(X, tt, geneset=geneset))}
+
+weightPerGene(rr1$weight.list, c("TLR5", "C3AR1"))
+
+}
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-%\keyword{ wMWUTest }
+\keyword{ misc }
 %\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
 
