@@ -76,6 +76,8 @@ FUNNEL.GSEA(X, tt, geneset, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="F
   \item{correlation}{Mean intergene correlation coefficient estimated
   from genes within each gene set.}
   \item{sig.geneset}{A list of significant gene sets.}
+  \item{Fstats}{A list of F-statistics, which are gene-level summary
+  statistics used in extended Mann-Whitney U test.}
 }
 
 \references{

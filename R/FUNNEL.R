@@ -28,18 +28,18 @@ equiv.regression <- function(yfd, xfd, threshold=0.01)
 ## FUNCTION: wMWUTest() ##
 ####################################################
 
-wMWUTest <- function(index,statistics,weight=NULL,correlation=0,df=Inf)
+wMWUTest <- function(test.index,statistics,weight=NULL,correlation=0,df=Inf)
   # weighted Rank sum test as for two-sample Wilcoxon-Mann-Whitney test,
   # and allowing for correlation between members of test set.
   # Edited from limma::rankSumTestWithCorrelation by Gordon Smyth and Di Wu.
 {
   n <- length(statistics)
-  n1 <- length(index)
+  n1 <- length(test.index)
   n2 <- n-n1
   ## Mann-Whitney style ranks
   r <- vector()
-  statistics0 <- setdiff(statistics, statistics[index])
-  for (i in 1:length(index)){r[i] <- sum(statistics[index[i]] > statistics0)}
+  statistics0 <- setdiff(statistics, statistics[test.index])
+  for (i in 1:length(test.index)){r[i] <- sum(statistics[test.index[i]] > statistics0)}
   ## weight
   if(is.null(weight)){weight <- rep(1, n1)}
   U.w <- sum(weight*r)
@@ -94,7 +94,7 @@ FUNNELtest <- function(fdexpr, geneset, Fstats, rho, df, nharm=3, centerfns=FALS
     weight.k <- weight.mat[,names(testset)]
     weight <- weight.k[!is.na(weight.k)]
     weight <- weight[unlist(testset)]
-    test <- wMWUTest(index=unlist(testset), statistics=Fstats, weight=weight, correlation=rho, df=df)
+    test <- wMWUTest(test.index=unlist(testset), statistics=Fstats, weight=weight, correlation=rho, df=df)
     pvals[k] <- test["greater"]
     weight.list[[k]] <- weight
   }
@@ -143,7 +143,7 @@ FUNNEL.GSEA <- function(X, tt, geneset, lambda=10^-3.5, rr=rep(1,length(tt)), se
   ## significant pathways
   sig.geneset <- names(geneset)[FUNNEL.out$pvals<alpha.level]
   ## output
-  return(list("pvals"=FUNNEL.out$pvals, "weight.list"=FUNNEL.out$weight.list, "correlation"=rho.hat, "sig.geneset"=sig.geneset))
+  return(list("pvals"=FUNNEL.out$pvals, "weight.list"=FUNNEL.out$weight.list, "correlation"=rho.hat, "sig.geneset"=sig.geneset, Fstats=Fstats))
 }
 
 
