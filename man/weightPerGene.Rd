@@ -54,9 +54,9 @@ weightPerGene(weight.list, genesOfInterest)
 data("H3N2-Subj1")
 
 ## It takes about 10 minutes to run on my Laptop; YMMV.
-\dontrun{t1 <- system.time(results1 <- FUNNEL.GSEA(X, tt, geneset=geneset))}
-
-weightPerGene(rr1$weight.list, c("TLR5", "C3AR1"))
+\dontrun{t1 <- system.time(results1 <- FUNNEL.GSEA(X, tt, genesets=genesets))
+    weightPerGene(rr1$weight.list, c("TLR5", "C3AR1"))
+}
 
 }
 

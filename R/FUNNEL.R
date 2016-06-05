@@ -72,11 +72,11 @@ wMWUTest <- function(test.index,statistics,weight=NULL,correlation=0,df=Inf)
 ## FUNCTION: FUNNELtest() ## getWeight(), wMWUTest()
 ############################
 
-FUNNELtest <- function(fdexpr, geneset, Fstats, rho, df, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.1)
+FUNNELtest <- function(fdexpr, genesets, Fstats, rho, df, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.1)
   ## IMPORT ##
   ## fdexpr = fdobj for the expression matrix
-  ## geneset = list of original pathway database
-  ## genenames = name for all the genes in fdexpr, expressed with the same annotation as the geneset
+  ## genesets = list of original pathway database
+  ## genenames = name for all the genes in fdexpr, expressed with the same annotation as the genesets
   ## Fstats = vector of per gene F-statistic at gene level analysis
   ## rho = mean of per pathway correlation
   ## df = degree of freedom used in calculating per gene F-statistic 
@@ -87,10 +87,10 @@ FUNNELtest <- function(fdexpr, geneset, Fstats, rho, df, nharm=3, centerfns=FALS
   pvals <- vector()
   weight.list <- list()
   cat("Weight calculation...", "\n")
-  weight.mat <- getWeightMatrix(fdexpr, geneset, nharm=nharm, centerfns=centerfns, equiv.threshold=equiv.threshold, lam1=lam1, lam2=lam2)
+  weight.mat <- getWeightMatrix(fdexpr, genesets, nharm=nharm, centerfns=centerfns, equiv.threshold=equiv.threshold, lam1=lam1, lam2=lam2)
   cat("Gene set test...", "\n")
-  for (k in 1:length(geneset)){
-    testset <- geneset[k] # list of length 1
+  for (k in 1:length(genesets)){
+    testset <- genesets[k] # list of length 1
     weight.k <- weight.mat[,names(testset)]
     weight <- weight.k[!is.na(weight.k)]
     weight <- weight[unlist(testset)]
@@ -98,19 +98,19 @@ FUNNELtest <- function(fdexpr, geneset, Fstats, rho, df, nharm=3, centerfns=FALS
     pvals[k] <- test["greater"]
     weight.list[[k]] <- weight
   }
-  names(pvals) <- names(weight.list) <- names(geneset)
+  names(pvals) <- names(weight.list) <- names(genesets)
   ## output
   return(list("pvals"=pvals, "weight.list"=weight.list))
 }
 
 ## example
-# key.geneset <- c(122, 123, 124, 126)
-# key.geneset <- true.pathways
-# t0 <- system.time(temp0 <- FUNNELtest0(fdexpr, geneset, lam1=0.4, lam2=0.01, Fstats=Fstats, rho=rho.hat, df=15))
-# temp0$pvals[key.geneset]
+# key.genesets <- c(122, 123, 124, 126)
+# key.genesets <- true.pathways
+# t0 <- system.time(temp0 <- FUNNELtest0(fdexpr, genesets, lam1=0.4, lam2=0.01, Fstats=Fstats, rho=rho.hat, df=15))
+# temp0$pvals[key.genesets]
 # 
-# t <- system.time(temp <- FUNNELtest(fdexpr, geneset, lam1=0.4, lam2=0.01, Fstats=Fstats, rho=rho.hat, df=15))
-# temp$pvals[key.geneset]
+# t <- system.time(temp <- FUNNELtest(fdexpr, genesets, lam1=0.4, lam2=0.01, Fstats=Fstats, rho=rho.hat, df=15))
+# temp$pvals[key.genesets]
 # 
 # identical(temp$weight.list, temp0$weight.list) #TRUE
 
@@ -119,31 +119,31 @@ FUNNELtest <- function(fdexpr, geneset, Fstats, rho, df, nharm=3, centerfns=FALS
 ## FUNCTION: FUNNEL.wrapper() ##
 ################################
 
-FUNNEL.GSEA <- function(X, tt, geneset, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="FVE", FVE_threshold=0.9, nharm=3, equiv.threshold=0.01, lam1=0.4, lam2=0.1, alpha.level=0.05)
+FUNNEL.GSEA <- function(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="FVE", FVE_threshold=0.9, nharm=3, equiv.threshold=0.01, lam1=0.4, lam2=0.1, alpha.level=0.05)
   ### INPUT ###
   # X = original expression matrix
   # tt = origninal tt points
-  # geneset = original geneset database
+  # genesets = original genesets database
 {
-  checkInputs(X,tt,geneset)
+  checkInputs(X,tt,genesets)
   ## Standardize timepoint and X so that the optimum roughness/L1/L2
   ## penality parameters are applicable
   tt <- (tt - min(tt))/diff(range(tt))
   X <- t(scale(t(X)))
-  ## Remove genes in predefined genesets that are not present in X the
+  ## Remove genes in predefined genesetss that are not present in X the
   ## filtered input data
-  geneset <- lapply(geneset, function(z) { intersect(z, rownames(X)) })
+  genesets <- lapply(genesets, function(z) { intersect(z, rownames(X)) })
   ## smoothing curve
   fdexpr <- smoothExpr(X, tt, lambda=lambda)
   ## get Fstats and rho
   Fstats <- getFstats(X, tt, rr=rr, selection_k=selection_k, FVE_threshold=FVE_threshold)
-  rho.hat <- getRho(X, geneset)
+  rho.hat <- getRho(X, genesets)
   ## FUNNEL test
-  FUNNEL.out <- FUNNELtest(fdexpr, geneset, Fstats=Fstats, rho=rho.hat, df=sum(rr)-1, nharm=nharm, centerfns=FALSE, equiv.threshold=equiv.threshold, lam1=lam1, lam2=lam2)
+  FUNNEL.out <- FUNNELtest(fdexpr, genesets, Fstats=Fstats, rho=rho.hat, df=sum(rr)-1, nharm=nharm, centerfns=FALSE, equiv.threshold=equiv.threshold, lam1=lam1, lam2=lam2)
   ## significant pathways
-  sig.geneset <- names(geneset)[FUNNEL.out$pvals<alpha.level]
+  sig.genesets <- names(genesets)[FUNNEL.out$pvals<alpha.level]
   ## output
-  return(list("pvals"=FUNNEL.out$pvals, "weight.list"=FUNNEL.out$weight.list, "correlation"=rho.hat, "sig.geneset"=sig.geneset, Fstats=Fstats))
+  return(list("pvals"=FUNNEL.out$pvals, "weight.list"=FUNNEL.out$weight.list, "correlation"=rho.hat, "sig.genesets"=sig.genesets, Fstats=Fstats))
 }
 
 
@@ -161,12 +161,12 @@ weightPerGene <- function(weight.list, genesOfInterest)
   ### OUTPUT ###
   # weightPerGene.list = list of weight for each gene in testgenes
 {
-  geneset <- lapply(weight.list,names)
+  genesets <- lapply(weight.list,names)
   weightPerGene.list <- vector("list", length=length(genesOfInterest))
   names(weightPerGene.list) <- genesOfInterest
   for(gene.i in genesOfInterest){
     ## find pathways that contain gene.i
-    index <- which(sapply(geneset, function(z){gene.i %in% z}))
+    index <- which(sapply(genesets, function(z){gene.i %in% z}))
     ## three cases
     if(length(index)==0){weight <- NA}
     if(length(index)==1){weight <- 1}
@@ -175,10 +175,10 @@ weightPerGene <- function(weight.list, genesOfInterest)
       weight <- vector()
       for (kk in 1:length(index)){
         index.k <- index[kk]
-        location <- which(geneset[[index.k]]==gene.i)
+        location <- which(genesets[[index.k]]==gene.i)
         weight[kk] <- weight.list[[index.k]][location]
       }
-      names(weight) <- names(geneset[index])
+      names(weight) <- names(genesets[index])
     }
     weightPerGene.list[[gene.i]] <- weight
   }
@@ -197,8 +197,8 @@ plotWeight <- function(weight.list, geneset.index, main="Weight", ...){
   colnames(weight) <- names(weight.list)[geneset.index]
   
   genes <- rownames(weight)
-  geneset <- lapply(weight.list,names)
-  membership <- table(unlist(geneset))
+  genesets <- lapply(weight.list,names)
+  membership <- table(unlist(genesets))
   anno_row <- as.data.frame(membership[genes])
   names(anno_row) <- "Membership"
   anno_row[anno_row>1,] <- "overlapping"

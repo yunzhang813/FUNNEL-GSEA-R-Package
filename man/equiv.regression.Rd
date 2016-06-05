@@ -71,10 +71,10 @@ library(quadrupen)
 ## Let us first create some functional objects
 data("H3N2-Subj1")
 
-## Remove genes in predefined genesets that are not present in X the
+## Remove genes in predefined genesetss that are not present in X the
 ## filtered input data
 genenames <- rownames(X)
-newGeneset <- lapply(geneset, function(z) { intersect(z, genenames) } )
+newGenesets <- lapply(genesets, function(z) { intersect(z, genenames) } )
 
 ## Standardize timepoint and X so that the optimum roughness/L1/L2
 ## penality parameters are applicable
@@ -91,13 +91,13 @@ gene.i <- c("C5AR1", "C3AR1")
 
 
 ## They belong to the following two pathways
-newGeneset.i <- newGeneset[c("NEUROACTIVE_LIGAND_RECEPTOR_INTERACTION", "COMPLEMENT_AND_COAGULATION_CASCADES")]
+newGeneset.i <- newGenesets[c("NEUROACTIVE_LIGAND_RECEPTOR_INTERACTION", "COMPLEMENT_AND_COAGULATION_CASCADES")]
 
 ## The response is just the smoothed curves of these two genes C3AR1
 yfd <- fdexpr[gene.i]
 
 ## Let us use the first 3 eigen-functions of both pathways as covariates
-xfd <- FUNNEL:::PCA.geneset(fdexpr, newGeneset.i, nharm = 3, centerfns = FALSE)$harmonics
+xfd <- FUNNEL:::PCA.genesets(fdexpr, newGeneset.i, nharm = 3, centerfns = FALSE)$harmonics
 
 ## Calculate the equivalent multivariate regression datasets
 equiv <- equiv.regression(yfd, xfd, threshold = 0.01)

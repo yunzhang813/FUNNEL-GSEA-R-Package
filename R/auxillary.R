@@ -6,21 +6,21 @@
 ## FUNCTION: getRho() ##
 ########################
 
-getRho <- function(X, geneset)
+getRho <- function(X, genesets)
 {
-  rho.geneset <- NULL
-  for (i in 1:length(geneset)) {
-    index <- geneset[[i]]
-    cor.expr.geneset <- cor(t(X[index, ]))
+  rho.genesets <- NULL
+  for (i in 1:length(genesets)) {
+    index <- genesets[[i]]
+    cor.expr.genesets <- cor(t(X[index, ]))
     m <- length(index)
-    rho.geneset <- rbind(rho.geneset, (m * mean(cor.expr.geneset) - 1)/(m - 1))
+    rho.genesets <- rbind(rho.genesets, (m * mean(cor.expr.genesets) - 1)/(m - 1))
   }
-  rho.hat <- mean(rho.geneset)
+  rho.hat <- mean(rho.genesets)
   return(rho.hat)
 }
 
 ## example
-# getRho(X,mGeneset)
+# getRho(X,mGenesets)
 
 
 ##########################
@@ -77,7 +77,7 @@ getFstats <- function(X,tt,rr=rep(1,length(tt)),selection_k="FVE",FVE_threshold=
 
 smoothExpr <- function(X, tt, lambda=10^-3.5)
   ### IMPORT ###
-  # X = gene expression matrix, with rows = genes (IMPORTANT: row names use same gene annotation as geneset), columns = time points
+  # X = gene expression matrix, with rows = genes (IMPORTANT: row names use same gene annotation as genesets), columns = time points
   # tt = vector of distinct time points
   # lambda = 10^-3.5, which is the smoothing penalty mannually selected for scaled-X and scaled-time
   ### EXPORT ###
@@ -95,34 +95,34 @@ smoothExpr <- function(X, tt, lambda=10^-3.5)
 
 
 #############################
-## FUNCTION: PCA.geneset() ##
+## FUNCTION: PCA.genesets() ##
 #############################
 
-PCA.geneset <- function(fdexpr, geneset, nharm=3, centerfns=FALSE)
+PCA.genesets <- function(fdexpr, genesets, nharm=3, centerfns=FALSE)
 {
   varprop <- coef.mat <- NULL
-  for(testset in geneset){
+  for(testset in genesets){
     pca <-  pca.fd(fdexpr[testset], nharm=nharm, centerfns=centerfns)  
     harms <- pca$harmonics
     coef.mat <- cbind(coef.mat, harms$coefs)
     varprop <- rbind(varprop, pca$varprop)    
   }
   colnames(varprop) <- paste0("harm",1:nharm)
-  colnames(coef.mat) <- paste0(names(geneset), ".", colnames(coef.mat))
+  colnames(coef.mat) <- paste0(names(genesets), ".", colnames(coef.mat))
   harmonics <- fd(coef.mat, fdexpr$basis)
   ## output
   return(list("harmonics"=harmonics, "varprop"=varprop))
 }
 
 #########################
-## FUNCTION: getBeta() ## PCA.geneset(), equiv.regression()
+## FUNCTION: getBeta() ## PCA.genesets(), equiv.regression()
 #########################
 
 getBeta <- function(fdexpr, gene.i, geneset.i, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.1)
 {
   ## equivalent regression
   yfd <- fdexpr[gene.i]
-  xfd <- PCA.geneset(fdexpr, geneset.i, nharm=nharm, centerfns=centerfns)$harmonics
+  xfd <- PCA.genesets(fdexpr, geneset.i, nharm=nharm, centerfns=centerfns)$harmonics
   equiv <- equiv.regression(yfd, xfd, threshold = equiv.threshold)
   Y <- equiv$y
   X <- equiv$Xmat
@@ -137,25 +137,25 @@ getBeta <- function(fdexpr, gene.i, geneset.i, nharm=3, centerfns=FALSE, equiv.t
 
 ## example
 # gene.i <- "2645"
-# index <- which(sapply(geneset, function(z){gene.i %in% z}))
-# geneset.i <- geneset[index]
+# index <- which(sapply(genesets, function(z){gene.i %in% z}))
+# geneset.i <- genesets[index]
 # getBeta(fdexpr, gene.i, geneset.i,lam1=0.5, lam2=10^-2)
 
 
 #################################
 ## FUNCTION: getWeightMatrix() ## getBeta()
 #################################
-getWeightMatrix <- function(fdexpr, geneset, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.1, verbose=FALSE){
+getWeightMatrix <- function(fdexpr, genesets, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.1, verbose=FALSE){
   genenames <- fdexpr$fdnames$reps
-  weight <- matrix(NA, length(genenames), length(geneset))
+  weight <- matrix(NA, length(genenames), length(genesets))
   rownames(weight) <- genenames
-  colnames(weight) <- names(geneset)
+  colnames(weight) <- names(genesets)
   for (gene.i in genenames){
     ## find pathways that contain gene.i
-    index <- names(which(sapply(geneset, function(z){gene.i %in% z})))
+    index <- names(which(sapply(genesets, function(z){gene.i %in% z})))
 
     ## the actual approach
-    geneset.i <- geneset[index]
+    geneset.i <- genesets[index]
     ## if non-ovelapping gene, weight = 1
     if (length(index)==1) {weight[gene.i, index] <- 1} 
     else{
@@ -181,6 +181,6 @@ getWeightMatrix <- function(fdexpr, geneset, nharm=3, centerfns=FALSE, equiv.thr
 }
 
 ## example
-# weight.mat <- getWeightMatrix(fdexpr, geneset)
+# weight.mat <- getWeightMatrix(fdexpr, genesets)
 
 

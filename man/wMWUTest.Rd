@@ -116,10 +116,10 @@ wMWUTest(test.index, stat, weight=ww2, correlation=0.1)
 data("H3N2-Subj1")
 
 ## It takes about 10 minutes to run on my Laptop; YMMV.
-\dontrun{t1 <- system.time(results1 <- FUNNEL.GSEA(X, tt, geneset=geneset))
+\dontrun{t1 <- system.time(results1 <- FUNNEL.GSEA(X, tt, genesets=genesets))
 
-    geneset2 <- lapply(geneset, function(z) { intersect(z, rownames(X)) })
-    gg1 <- geneset2[[1]]
+    genesets2 <- lapply(genesets, function(z) { intersect(z, rownames(X)) })
+    gg1 <- genesets2[[1]]
     ww1 <- rr1[["weight.list"]][["GLYCOLYSIS_GLUCONEOGENESIS"]]
     rho <- rr1$correlation
 

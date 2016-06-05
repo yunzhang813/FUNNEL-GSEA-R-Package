@@ -49,11 +49,10 @@ plotWeight(weight.list, geneset.index, main="Weight", ...)
 data("H3N2-Subj1")
 
 ## It takes about 10 minutes to run on my Laptop; YMMV.
-\dontrun{t1 <- system.time(results1 <- FUNNEL.GSEA(X, tt, geneset=geneset))}
-
+\dontrun{t1 <- system.time(results1 <- FUNNEL.GSEA(X, tt, genesets=genesets))
 ## Generate a heatmap of weights for a particular gene set
-plotWeight(rr1$weight.list, "PRIMARY_IMMUNODEFICIENCY")
-
+    plotWeight(rr1$weight.list, "PRIMARY_IMMUNODEFICIENCY")
+}
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the

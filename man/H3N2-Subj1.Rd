@@ -21,11 +21,11 @@
     \item{\code{X}}{A 11189x16 pre-processed gene expression matrix taken
       from a H3N2 human influenza challenge study (Subject1). Genes are
       ordered as rows and each column represent a time point. Row names must
-      be gene names used in \code{geneset}. Columns must be ordered
+      be gene names used in \code{genesets}. Columns must be ordered
       by \code{tt}.}
     \item{\code{tt}}{A vector of ordered time points.}
-    \item{\code{geneset}}{List of 186 MSigDB:KEGG gene sets.
-      Each gene set is an element of the list. Genes in \code{geneset}
+    \item{\code{genesets}}{List of 186 MSigDB:KEGG gene sets.
+      Each gene set is an element of the list. Genes in \code{genesets}
       should be annotated in the same way rownames of the \code{X} matrix does.}
   }
 }

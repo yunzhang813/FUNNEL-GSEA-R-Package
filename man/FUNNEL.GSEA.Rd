@@ -8,7 +8,7 @@
 \description{
   This is the main function of this package.  It takes gene expression
   matrix (X), time points (tt), a pre-defined list of gene sets
-  (geneset), and several tuning parameters (see below) as input. It then
+  (genesets), and several tuning parameters (see below) as input. It then
   apply functional data analysis techniques and elastic-net regression
   to define weights for genes that are shared by more than one gene sets
   (the overlapping genes). Finally, it applies an extended Mann-Whitney
@@ -18,19 +18,19 @@
 }
 
 \usage{
-FUNNEL.GSEA(X, tt, geneset, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="FVE", FVE_threshold=0.9, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.1, alpha.level=0.05)
+FUNNEL.GSEA(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="FVE", FVE_threshold=0.9, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.1, alpha.level=0.05)
 }
 
 \arguments{
   \item{X}{A gene expression matrix. Genes must be ordered as rows and
   each column represent a time point. Row names must be gene names used
-  in \code{geneset}. Columns must be ordered by \code{tt}. }
+  in \code{genesets}. Columns must be ordered by \code{tt}. }
   \item{tt}{A vector of ordered unique time points.}
-  \item{geneset}{A list of pre-defined gene sets.  Each element of this
+  \item{genesets}{A list of pre-defined gene sets.  Each element of this
   list is a vector of gene names that are rownames of the \code{X}
-  matrix. Note that due to data pre-processsing, many genes in geneset
+  matrix. Note that due to data pre-processsing, many genes in genesets
   may not be present in \code{rownames(X)}. Internally, we define a new
-  geneset object that is a collection of the intersection of each
+  genesets object that is a collection of the intersection of each
   pre-defined pathway and \code{rownames(X)} for the actual computation. }
   \item{lambda}{Roughness penalty (smoothing) parameter used by function
   \code{smooth.basis} in package \code{fda}.  Empirical evidences show
@@ -75,7 +75,7 @@ FUNNEL.GSEA(X, tt, geneset, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="F
   membership) computed from the elastic-net regression. }
   \item{correlation}{Mean intergene correlation coefficient estimated
   from genes within each gene set.}
-  \item{sig.geneset}{A list of significant gene sets.}
+  \item{sig.genesets}{A list of significant gene sets.}
   \item{Fstats}{A list of F-statistics, which are gene-level summary
   statistics used in extended Mann-Whitney U test.}
 }
@@ -105,7 +105,7 @@ FUNNEL.GSEA(X, tt, geneset, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="F
 data("H3N2-Subj1")
 
 ## It takes about 10 minutes to run on my Laptop; YMMV.
-\dontrun{t1 <- system.time(results1 <- FUNNEL.GSEA(X, tt, geneset=geneset))}
+\dontrun{t1 <- system.time(results1 <- FUNNEL.GSEA(X, tt, genesets=genesets))}
 
 }
 
