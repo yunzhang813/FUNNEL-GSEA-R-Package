@@ -128,7 +128,7 @@ FUNNEL.GSEA <- function(X, tt, geneset, lambda=10^-3.5, rr=rep(1,length(tt)), se
   checkInputs(X,tt,geneset)
   ## Standardize timepoint and X so that the optimum roughness/L1/L2
   ## penality parameters are applicable
-  tt <- round((tt - min(tt))/diff(range(tt)), 2)
+  tt <- (tt - min(tt))/diff(range(tt))
   X <- t(scale(t(X)))
   ## Remove genes in predefined genesets that are not present in X the
   ## filtered input data
