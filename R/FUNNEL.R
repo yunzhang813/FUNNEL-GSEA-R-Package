@@ -119,7 +119,7 @@ FUNNELtest <- function(fdexpr, geneset, Fstats, rho, df, nharm=3, centerfns=FALS
 ## FUNCTION: FUNNEL.wrapper() ##
 ################################
 
-FUNNEL.GSEA <- function(X, tt, geneset, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="FVE", FVE_threshold=0.9, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.1, alpha.level=0.05)
+FUNNEL.GSEA <- function(X, tt, geneset, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="FVE", FVE_threshold=0.9, nharm=3, equiv.threshold=0.01, lam1=0.4, lam2=0.1, alpha.level=0.05)
   ### INPUT ###
   # X = original expression matrix
   # tt = origninal tt points
@@ -139,7 +139,7 @@ FUNNEL.GSEA <- function(X, tt, geneset, lambda=10^-3.5, rr=rep(1,length(tt)), se
   Fstats <- getFstats(X, tt, rr=rr, selection_k=selection_k, FVE_threshold=FVE_threshold)
   rho.hat <- getRho(X, geneset)
   ## FUNNEL test
-  FUNNEL.out <- FUNNELtest(fdexpr, geneset, Fstats=Fstats, rho=rho.hat, df=sum(rr)-1, nharm=nharm, centerfns=centerfns, equiv.threshold=equiv.threshold, lam1=lam1, lam2=lam2)
+  FUNNEL.out <- FUNNELtest(fdexpr, geneset, Fstats=Fstats, rho=rho.hat, df=sum(rr)-1, nharm=nharm, centerfns=FALSE, equiv.threshold=equiv.threshold, lam1=lam1, lam2=lam2)
   ## significant pathways
   sig.geneset <- names(geneset)[FUNNEL.out$pvals<alpha.level]
   ## output
