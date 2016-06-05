@@ -119,21 +119,24 @@ FUNNELtest <- function(fdexpr, geneset, Fstats, rho, df, nharm=3, centerfns=FALS
 ## FUNCTION: FUNNEL.wrapper() ##
 ################################
 
-FUNNEL.GSEA <- function(X, time, geneset, lambda=10^-3.5, rr=rep(1,length(time)), selection_k="FVE", FVE_threshold=0.9, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.1, alpha.level=0.05)
+FUNNEL.GSEA <- function(X, tt, geneset, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="FVE", FVE_threshold=0.9, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.1, alpha.level=0.05)
   ### INPUT ###
   # X = original expression matrix
-  # time = origninal time points
+  # tt = origninal tt points
   # geneset = original geneset database
 {
-  checkInputs(X,time,geneset)
-  ## data preparation
-  time <- scaleTime(time)
-  X <- scaleX(X)
-  geneset <- modifyGeneset(geneset,rownames(X))
+  checkInputs(X,tt,geneset)
+  ## Standardize timepoint and X so that the optimum roughness/L1/L2
+  ## penality parameters are applicable
+  tt <- round((tt - min(tt))/diff(range(tt)), 2)
+  X <- t(scale(t(X)))
+  ## Remove genes in predefined genesets that are not present in X the
+  ## filtered input data
+  geneset <- lapply(geneset, function(z) { intersect(z, rownames(X)) })
   ## smoothing curve
-  fdexpr <- smoothExpr(X, time, lambda=lambda)
+  fdexpr <- smoothExpr(X, tt, lambda=lambda)
   ## get Fstats and rho
-  Fstats <- getFstats(X, time, rr=rr, selection_k=selection_k, FVE_threshold=FVE_threshold)
+  Fstats <- getFstats(X, tt, rr=rr, selection_k=selection_k, FVE_threshold=FVE_threshold)
   rho.hat <- getRho(X, geneset)
   ## FUNNEL test
   FUNNEL.out <- FUNNELtest(fdexpr, geneset, Fstats=Fstats, rho=rho.hat, df=sum(rr)-1, nharm=nharm, centerfns=centerfns, equiv.threshold=equiv.threshold, lam1=lam1, lam2=lam2)

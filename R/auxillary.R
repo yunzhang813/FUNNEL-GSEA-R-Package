@@ -2,29 +2,6 @@
 ## a typical end user to use.  A determined user can still get these
 ## functions by scaleX <- FUNNEL:::scaleX.
 
-scaleTime <- function(time){
-  new.time <- (time - min(time)) / diff(range(time))
-  round(new.time, 2)
-}
-
-#########################
-## FUNCTION: scaleX() ##
-#########################
-
-scaleX <- function(X){
-  X.scale <- t(scale(t(X)))
-  return(X.scale)
-}
-
-###############################
-## FUNCTION: modifyGeneset() ##
-###############################
-
-modifyGeneset <- function(geneset, genenames){
-  newGeneset <- lapply(geneset, function(z){z<-z[z %in% genenames]})
-  return(newGeneset)
-}
-
 ########################
 ## FUNCTION: getRho() ##
 ########################
@@ -50,9 +27,9 @@ getRho <- function(X, geneset)
 ## FUNCTION: getBasis() ##
 ##########################
 
-getBasis <- function(time){
-  Nt <- length(time)
-  basis <- create.bspline.basis(range(time), Nt+4-2, 4, time)
+getBasis <- function(tt){
+  Nt <- length(tt)
+  basis <- create.bspline.basis(range(tt), Nt+4-2, 4, tt)
   return(basis)
 }
 
@@ -61,10 +38,10 @@ getBasis <- function(time){
 ## FUNCTION: getFstats() ##
 ###########################
 
-getFstats <- function(X,time,rr=rep(1,length(time)),selection_k="FVE",FVE_threshold=0.9)
+getFstats <- function(X,tt,rr=rep(1,length(tt)),selection_k="FVE",FVE_threshold=0.9)
   ### INPUT ###
   # X: n*m data matrix, with missing values denoted as NA.
-  # time: length mm vector, unique time points.
+  # tt: length mm vector, unique time points.
   # rr: number of repetitions at each unique time point.
   # selection_k: the method of choosing the number of principal components;
   #              "FVE" (fraction of variance explained) : use scree plot
@@ -76,7 +53,6 @@ getFstats <- function(X,time,rr=rep(1,length(time)),selection_k="FVE",FVE_thresh
   #                that explain at least "FVE_threshold" of total variation.
 {
   y = X
-  tt = time
   res = PCA(y,tt,rr,selection_k=selection_k,FVE_threshold=FVE_threshold,verbose="off")
   n = nrow(y)
   m = ncol(y)
@@ -93,29 +69,29 @@ getFstats <- function(X,time,rr=rep(1,length(time)),selection_k="FVE",FVE_thresh
 } 
 
 ## example
-# Fstats <- getFstats(X, time, rr=rep(1,length(time)))
+# Fstats <- getFstats(X, tt, rr=rep(1,length(tt)))
 
 ############################
 ## FUNCTION: smoothExpr() ## getBasis()
 ############################
 
-smoothExpr <- function(X, time, lambda=10^-3.5)
+smoothExpr <- function(X, tt, lambda=10^-3.5)
   ### IMPORT ###
   # X = gene expression matrix, with rows = genes (IMPORTANT: row names use same gene annotation as geneset), columns = time points
-  # time = vector of distinct time points
+  # tt = vector of distinct time points
   # lambda = 10^-3.5, which is the smoothing penalty mannually selected for scaled-X and scaled-time
   ### EXPORT ###
   # fdobj = fdobj for the expression matrix
 {
-  basis <- getBasis(time)
+  basis <- getBasis(tt)
   par <- fdPar(basis, 2, lambda=lambda)
-  fdobj <- smooth.basis(time, t(X), par)$fd
+  fdobj <- smooth.basis(tt, t(X), par)$fd
   ## output
   return(fdobj)
 }
 
 ## example
-# fdExpr0 <- smoothExpr(X, time)
+# fdExpr0 <- smoothExpr(X, tt)
 
 
 #############################

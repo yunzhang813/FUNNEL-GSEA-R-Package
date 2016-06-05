@@ -9,12 +9,12 @@
 }
 
 \usage{
-FUNNEL.GSEA(X, time, geneset, lambda=10^-3.5, rr=rep(1,length(time)), selection_k="FVE", FVE_threshold=0.9, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.1, alpha.level=0.05)
+FUNNEL.GSEA(X, tt, geneset, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="FVE", FVE_threshold=0.9, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.1, alpha.level=0.05)
 }
 
 \arguments{
   \item{X}{..}
-  \item{time}{..}
+  \item{tt}{..}
   \item{geneset}{..}
   \item{lambda}{..} 
   \item{rr}{..} 
