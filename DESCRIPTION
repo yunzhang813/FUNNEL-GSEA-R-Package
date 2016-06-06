@@ -1,7 +1,7 @@
 Package: FUNNEL
 Type: Package
 Title: FUNNEL-GSEA: FUNctioNal ELastic-net Regression in time-course Gene Set Enrichment Analysis
-Version: 0.0.3
+Version: 0.1.0
 Date: 2016-06-5
 Author: Yun Zhang, Juilee Thakar, Xing Qiu 
 Maintainer: Yun Zhang <yun_zhang@urmc.rochester.edu>; Xing Qiu <xing_qiu@urmc.rochester.edu>
