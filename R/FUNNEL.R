@@ -72,7 +72,7 @@ wMWUTest <- function(test.index,statistics,weight=NULL,correlation=0,df=Inf)
 ## FUNCTION: FUNNELtest() ## getWeight(), wMWUTest()
 ############################
 
-FUNNELtest <- function(fdexpr, genesets, Fstats, rho, df, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.1)
+FUNNELtest <- function(fdexpr, genesets, Fstats, rho, df, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.01)
   ## IMPORT ##
   ## fdexpr = fdobj for the expression matrix
   ## genesets = list of original pathway database
