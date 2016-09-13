@@ -7,8 +7,8 @@
 
 \description{
   This is the main function of this package.  It takes gene expression
-  matrix (X), time points (tt), a pre-defined list of gene sets
-  (genesets), and several tuning parameters (see below) as input. It then
+  matrix (\code{X}), time points (\code{tt}), a pre-defined list of gene sets
+  (\code{genesets}), and several tuning parameters (see below) as input. It then
   apply functional data analysis techniques and elastic-net regression
   to define weights for genes that are shared by more than one gene sets
   (the overlapping genes). Finally, it applies an extended Mann-Whitney
@@ -18,7 +18,9 @@
 }
 
 \usage{
-FUNNEL.GSEA(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="FVE", FVE_threshold=0.9, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.01, alpha.level=0.05)
+FUNNEL.GSEA(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)),
+            selection_k="FVE", FVE_threshold=0.9, nharm=3, centerfns=FALSE,
+            equiv.threshold=0.01, lam1=0.4, lam2=0.01, alpha.level=0.05)
 }
 
 \arguments{
@@ -40,17 +42,19 @@ FUNNEL.GSEA(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="
   these standardizations automatically.} 
   \item{rr}{Number of repetitions at each unique time points.} 
   \item{selection_k}{Method of choosing the number of principal
-    components. Choices are: "FVE" (fraction of variance explained),
+    components. Choices are: \code{"FVE"} (fraction of variance explained),
     which use scree plot approach to select number of principal
-    components. See "FVE_threshold" below; a positive integer K:
+    components. See \code{FVE_threshold} below; a positive integer \code{K}:
     user-specified number of principal components. Default value:
-    "FVE".} 
+    \code{"FVE"}.} 
   \item{FVE_threshold}{A positive number between 0 and 1. It is
-    used with the option selection_k = "FVE" to select the number
-    of principal components that explain at least "FVE_threshold"
+    used with the option \code{selection_k = "FVE"} to select the number
+    of principal components that explain at least \code{FVE_threshold}
     of total variation. Default value: 0.9. } 
   \item{nharm}{Number of eigenfunctions to be used to represent the
-  overall temporal trend of each gene set. Default to 3.} 
+    overall temporal trend of each gene set. Default to 3.} 
+  \item{centerfns}{An indicator if to center functions in \code{pca.fd()}. 
+    Default: \code{FALSE}.}
   \item{equiv.threshold}{ This is a threshold to be used in function
     \code{equiv.regression}. Any eigenvalue that explains less than this
     proportion of total variance will be discarded.  Default to 0.01 (one
@@ -62,10 +66,10 @@ FUNNEL.GSEA(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="
 }
 
 \details{
-  Technical details of this transformation is documented in Yun Zhang,
+  Technical details of this procedure is documented in Yun Zhang,
   Juilee Thakar, Xing Qiu (2016) FUNNEL-GSEA: FUNctioNal ELastic-net
   Regression in time-course Gene Set Enrichment Analysis, submitted to
-  Nucleic Acids Research.
+  Bioinformatics.
 }
 
 \value{
@@ -75,29 +79,20 @@ FUNNEL.GSEA(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="
   membership) computed from the elastic-net regression. }
   \item{correlation}{Mean intergene correlation coefficient estimated
   from genes within each gene set.}
-  \item{sig.genesets}{A list of significant gene sets.}
-  \item{Fstats}{A list of F-statistics, which are gene-level summary
+  \item{sig.genesets}{A vector of names (or indices) of significant gene sets.}
+  \item{Fstats}{A vector of F-statistics, which are gene-level summary
   statistics used in extended Mann-Whitney U test.}
 }
 
 \references{
   Yun Zhang, Juilee Thakar, Xing Qiu (2016) FUNNEL-GSEA: FUNctioNal ELastic-net
   Regression in time-course Gene Set Enrichment Analysis, submitted to
-  Nucleic Acids Research.
+  Bioinformatics.
 }
 
 \author{
   Yun Zhang, Juilee Thakar, Xing Qiu
 }
-
-%\note{
-%%  ~~further notes~~
-%}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-%% \seealso{
-%% }
 
 \examples{
 

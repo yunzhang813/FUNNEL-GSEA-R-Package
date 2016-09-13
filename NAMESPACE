@@ -8,4 +8,4 @@ importFrom("grDevices", "colorRampPalette")
 importFrom("graphics", "hist")
 importFrom("stats", "cor", "dnorm", "p.adjust", "pchisq", "pt", "splinefun")
 
-exportPattern(FUNNEL.GSEA, weightPerGene, plotWeight, equiv.regression, wMWUTest)
+exportPattern(FUNNEL.GSEA, weightPerGene, plotWeight, equiv.regression, wMWUTest, FPCA.Fstats)

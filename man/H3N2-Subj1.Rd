@@ -7,8 +7,8 @@
 }
 
 \description{
-  This is the processed gene expression data extracted from Huang et al
-  2011 PloS Comp. Genet. study, with GEO accession number
+  This is the processed gene expression data extracted from \cite{Huang et al
+  2011 PloS Comp. Genet.} study, with GEO accession number
   GSE52428. Expressions are log2-transformed and filtered by the
   criterion IQR>=0.3.
 }
@@ -24,7 +24,7 @@
       be gene names used in \code{genesets}. Columns must be ordered
       by \code{tt}.}
     \item{\code{tt}}{A vector of ordered time points.}
-    \item{\code{genesets}}{List of 186 MSigDB:KEGG gene sets.
+    \item{\code{genesets}}{A list of 186 MSigDB:KEGG gene sets.
       Each gene set is an element of the list. Genes in \code{genesets}
       should be annotated in the same way rownames of the \code{X} matrix does.}
   }

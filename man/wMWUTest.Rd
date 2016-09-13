@@ -2,13 +2,12 @@
 \alias{wMWUTest}
 
 \title{
-    An extened Mann-Whitney U Rank Sum Test That Incorporates Pre-computed
-    Weights and Correlation.
+    An extended Mann-Whitney U test that incorporates pre-computed weights and correlation
 }
 
 \description{
-    This is an extension of the two-sample Mann-Whitney U test which
-    incorporates pre-calculated weights for the correlated inputs in the
+    This is an extension of the two-sample Mann-Whitney U test (a.k.a. rank sum test)
+    which incorporates pre-calculated weights for the correlated inputs in the
     test group. Note that the pre-calculated correlation only applies to the
     test group (the gene set of interest).  The correlation of the
     background genes is assumed to be zero.  Pre-calculated weights are
@@ -16,7 +15,7 @@
 }
 
 \usage{
-    wMWUTest(test.index, statistics, weight=NULL, correlation=0, df=Inf)
+wMWUTest(test.index, statistics, weight=NULL, correlation=0, df=Inf)
 }
 
 \arguments{
@@ -24,7 +23,7 @@
         to the test group (the gene set to be tested).}
     \item{statistics}{A (named) numeric vector contains all the elements
     (summary statistics or observed values) from *both* groups, such
-    that statitics[test.index] is a vector of statistics of the test set.}
+    that \code{statitics[test.index]} is a vector of statistics of the test set.}
     \item{weight}{A numeric vector, of the same length as
       \code{test.index}, giving weights for the elements in the test
       group. If \code{NULL}, all elements are weighted equally with unit
@@ -33,12 +32,15 @@
       group. Genes in the second group are assumed to be independent
       of each other and of the genes in the test group.}
     \item{df}{Degrees of freedom, based on which the correlation is
-    estimated. For \code{funnel.gsea}, we define \code{df==N.timepoints-1}. }
+    estimated. For \code{FUNNEL.GSEA}, we define \code{df} == number of time points -1. }
 }
 
-%\details{
-    %%  ~~ If necessary, more details than the description above ~~
-                                                               %}
+\details{
+  Technical details of this test is documented in Yun Zhang,
+  Juilee Thakar, Xing Qiu (2016) FUNNEL-GSEA: FUNctioNal ELastic-net
+  Regression in time-course Gene Set Enrichment Analysis, submitted to
+  Bioinformatics.
+}
 
 \value{
     P-values (\code{less}, \code{greater}) for one-sided left- and
@@ -55,7 +57,7 @@
   
   \cite{Yun Zhang, Juilee Thakar, Xing Qiu (2016) FUNNEL-GSEA:
     FUNctioNal ELastic-net Regression in time-course Gene Set Enrichment
-    Analysis.  \emph{submitted to Nucleic Acids Research}.
+    Analysis. Submitted to Bioinformatics.
   }
 }
 
@@ -63,16 +65,10 @@
   Yun Zhang, Juilee Thakar, Xing Qiu
 }
 
-%\note{
-%%  ~~further notes~~
-%}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
 \seealso{
   \code{\link{wilcox.test}} performs the standard Wilcoxon rank sum test.
   
-  \code{\link[limma]{rankSumTestWithCorrelation}} in the \code{limma} package performs the correlation extention of the rank sum test.
+  \code{\link[limma]{rankSumTestWithCorrelation}} performs the correlation extention of the rank sum test.
 }
 
 \examples{
@@ -119,15 +115,16 @@ data("H3N2-Subj1")
 \dontrun{t1 <- system.time(results1 <- FUNNEL.GSEA(X, tt, genesets=genesets))
 
     genesets2 <- lapply(genesets, function(z) { intersect(z, rownames(X)) })
-    gg1 <- genesets2[[1]]
-    ww1 <- rr1[["weight.list"]][["GLYCOLYSIS_GLUCONEOGENESIS"]]
+    gg1 <- genesets2[["GLYCOLYSIS_GLUCONEOGENESIS"]]
+    ww1 <- rr1$weight.list[["GLYCOLYSIS_GLUCONEOGENESIS"]]
     rho <- rr1$correlation
 
     ## The test
     o1 <- wMWUTest(gg1, rr1$Fstats, ww1, rho, df=15)
-    o1["greater"]                       #p-value for gene test
+    ## p-value for the gene set test
+    o1["greater"]
 
-    ## should be the same as the p-value below
+    ## Should be the same as the p-value below
     rr1$pvals["GLYCOLYSIS_GLUCONEOGENESIS"]
 
 }

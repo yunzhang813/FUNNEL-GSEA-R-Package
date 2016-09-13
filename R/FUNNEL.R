@@ -1,8 +1,42 @@
 ## Required packages: fda, quadrupen, pheatmap, RColorBrewer
 
-###########################
-## FUNCTION: scaleTime() ##
-###########################
+
+#############################
+## FUNCTION: FPCA.Fstats() ##
+#############################
+
+FPCA.Fstats <- function(X,tt,rr=rep(1,length(tt)),selection_k="FVE",FVE_threshold=0.9)
+### INPUT ###
+# X: n*m data matrix, with missing values denoted as NA.
+# tt: length mm vector, unique time points.
+# rr: number of repetitions at each unique time point.
+# selection_k: the method of choosing the number of principal components;
+#              "FVE" (fraction of variance explained) : use scree plot
+#                           approach to select number of principal
+#                           components), see "FVE_threshold" below;
+#              positive integer K: user-specified number of principal components.
+# FVE_threshold: a positive number between 0 and 1; It is used with the option
+#                selection_k = "FVE" to select the number of principal components
+#                that explain at least "FVE_threshold" of total variation.
+### EXPORT ###
+# stat = Functional F-statistics
+{
+  y = X
+  res = PCA(y,tt,rr,selection_k=selection_k,FVE_threshold=FVE_threshold,verbose="off")
+  n = nrow(y)
+  m = ncol(y)
+  mm = length(tt)
+  rr1 = rep(1:mm,rr)
+  mu = res$mu
+  yfit = res$yfit_orig
+  # if(delta=="auto"){ delta = res$sigma }
+  delta = res$sigma
+  ss0 = rowSums((y-matrix(rep(mu,m),ncol=m))^2,na.rm=T)
+  ss1 = rowSums((y-yfit)^2,na.rm=T)
+  stat = (ss0-ss1)/(ss1+delta)
+  return(stat)
+} 
+
 
 ##################################
 ## FUNCTION: equiv.regression() ##
@@ -29,9 +63,8 @@ equiv.regression <- function(yfd, xfd, threshold=0.01)
 ####################################################
 
 wMWUTest <- function(test.index,statistics,weight=NULL,correlation=0,df=Inf)
-  # weighted Rank sum test as for two-sample Wilcoxon-Mann-Whitney test,
-  # and allowing for correlation between members of test set.
-  # Edited from limma::rankSumTestWithCorrelation by Gordon Smyth and Di Wu.
+# Weighted rank sum test for correlated samples.
+# See also limma::rankSumTestWithCorrelation.
 {
   n <- length(statistics)
   n1 <- length(test.index)
@@ -69,20 +102,20 @@ wMWUTest <- function(test.index,statistics,weight=NULL,correlation=0,df=Inf)
 }
 
 ############################
-## FUNCTION: FUNNELtest() ## getWeight(), wMWUTest()
+## FUNCTION: FUNNELtest() ## getWeightMatrix(), wMWUTest()
 ############################
 
 FUNNELtest <- function(fdexpr, genesets, Fstats, rho, df, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.01)
-  ## IMPORT ##
-  ## fdexpr = fdobj for the expression matrix
-  ## genesets = list of original pathway database
-  ## genenames = name for all the genes in fdexpr, expressed with the same annotation as the genesets
-  ## Fstats = vector of per gene F-statistic at gene level analysis
-  ## rho = mean of per pathway correlation
-  ## df = degree of freedom used in calculating per gene F-statistic 
-  ## OUTPUT ##
-  ## pvals = p-values for each pathway
-  ## weight.list = list of weighting vectors for each pathway
+## IMPORT ##
+## fdexpr = fdobj for the expression matrix
+## genesets = list of gene sets
+## genenames = names of all genes in fdexpr (same annotation as in genesets)
+## Fstats = vector of functional F-statistics per gene
+## rho = mean of per pathway correlation
+## df = degrees of freedom for wMWUTest 
+## OUTPUT ##
+## pvals = p-values per gene set
+## weight.list = list of vectors of weights per gene set
 {
   pvals <- vector()
   weight.list <- list()
@@ -103,29 +136,24 @@ FUNNELtest <- function(fdexpr, genesets, Fstats, rho, df, nharm=3, centerfns=FAL
   return(list("pvals"=pvals, "weight.list"=weight.list))
 }
 
-## example
-# key.genesets <- c(122, 123, 124, 126)
-# key.genesets <- true.pathways
-# t0 <- system.time(temp0 <- FUNNELtest0(fdexpr, genesets, lam1=0.4, lam2=0.01, Fstats=Fstats, rho=rho.hat, df=15))
-# temp0$pvals[key.genesets]
-# 
-# t <- system.time(temp <- FUNNELtest(fdexpr, genesets, lam1=0.4, lam2=0.01, Fstats=Fstats, rho=rho.hat, df=15))
-# temp$pvals[key.genesets]
-# 
-# identical(temp$weight.list, temp0$weight.list) #TRUE
 
+#############################
+## FUNCTION: FUNNEL.GSEA() ##
+#############################
 
-################################
-## FUNCTION: FUNNEL.wrapper() ##
-################################
-
-FUNNEL.GSEA <- function(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="FVE", FVE_threshold=0.9, nharm=3, equiv.threshold=0.01, lam1=0.4, lam2=0.1, alpha.level=0.05)
-  ### INPUT ###
-  # X = original expression matrix
-  # tt = origninal tt points
-  # genesets = original genesets database
+FUNNEL.GSEA <- function(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="FVE", FVE_threshold=0.9, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.01, alpha.level=0.05)
+### INPUT ###
+# X = original expression matrix
+# tt = origninal tt points
+# genesets = original gene sets
+### OUTPUT ###
+# pvals = p-values per gene set
+# weight.list = list of vectors of weights per gene set
+# correlation = mean pathway correlation
+# sig.genesets = significant gene sets
+# Fstats = functional F-statistics per gene
 {
-  checkInputs(X,tt,genesets)
+  checkInputs(X, genesets)
   ## Standardize timepoint and X so that the optimum roughness/L1/L2
   ## penality parameters are applicable
   tt <- (tt - min(tt))/diff(range(tt))
@@ -133,33 +161,31 @@ FUNNEL.GSEA <- function(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)), s
   ## Remove genes in predefined genesetss that are not present in X the
   ## filtered input data
   genesets <- lapply(genesets, function(z) { intersect(z, rownames(X)) })
-  ## smoothing curve
-  fdexpr <- smoothExpr(X, tt, lambda=lambda)
-  ## get Fstats and rho
-  Fstats <- getFstats(X, tt, rr=rr, selection_k=selection_k, FVE_threshold=FVE_threshold)
+  ## get Fstats
+  Fstats <- FPCA.Fstats(X, tt, rr=rr, selection_k=selection_k, FVE_threshold=FVE_threshold)
+  ## get rho.hat
   rho.hat <- getRho(X, genesets)
+  ## smoothing
+  fdexpr <- smoothExpr(X, tt, lambda=lambda)
   ## FUNNEL test
   FUNNEL.out <- FUNNELtest(fdexpr, genesets, Fstats=Fstats, rho=rho.hat, df=sum(rr)-1, nharm=nharm, centerfns=FALSE, equiv.threshold=equiv.threshold, lam1=lam1, lam2=lam2)
   ## significant pathways
   sig.genesets <- names(genesets)[FUNNEL.out$pvals<alpha.level]
   ## output
-  return(list("pvals"=FUNNEL.out$pvals, "weight.list"=FUNNEL.out$weight.list, "correlation"=rho.hat, "sig.genesets"=sig.genesets, Fstats=Fstats))
+  return(list("pvals"=FUNNEL.out$pvals, "weight.list"=FUNNEL.out$weight.list, "correlation"=rho.hat, "sig.genesets"=sig.genesets, "Fstats"=Fstats))
 }
 
-
-
-#################################################################################################
 
 ###############################
 ## FUNCTION: weightPerGene() ##
 ###############################
 
 weightPerGene <- function(weight.list, genesOfInterest)
-  ### IMPORT ###
-  # weight.list = output from FUNNELtest() or FUNNEL.wrapper()
-  # genesOfInterest = vector of genes of interest
-  ### OUTPUT ###
-  # weightPerGene.list = list of weight for each gene in testgenes
+### IMPORT ###
+# weight.list = output from FUNNELtest() or FUNNEL.wrapper()
+# genesOfInterest = vector of genes of interest
+### OUTPUT ###
+# weightPerGene.list = list of weights associated with each gene
 {
   genesets <- lapply(weight.list,names)
   weightPerGene.list <- vector("list", length=length(genesOfInterest))
@@ -187,39 +213,33 @@ weightPerGene <- function(weight.list, genesOfInterest)
 
 
 ############################
-## FUNCTION: plotWeight() ## plot of non-zero weights per geneset
+## FUNCTION: plotWeight() ## 
 ############################
 
-plotWeight <- function(weight.list, geneset.index, main="Weight", ...){
+plotWeight <- function(weight.list, geneset.index, main="Weight", show_colnames=TRUE, ...)
+## Plot of non-zero weights per gene set
+{
   weight <- sort(weight.list[[geneset.index]], decreasing=TRUE)
   weight <- weight[weight!=0]
   weight <- as.matrix(weight)
-  colnames(weight) <- names(weight.list)[geneset.index]
+  if (is.numeric(geneset.index)){colnames(weight) <- names(weight.list)[geneset.index]}
+  if (is.character(geneset.index)){colnames(weight) <- geneset.index}
   
   genes <- rownames(weight)
   genesets <- lapply(weight.list,names)
   membership <- table(unlist(genesets))
   anno_row <- as.data.frame(membership[genes])
   names(anno_row) <- "Membership"
-  anno_row[anno_row>1,] <- "overlapping"
-  anno_row[anno_row==1,] <- "exclusive"
+  anno_row[anno_row>1,] <- "Overlapping"
+  anno_row[anno_row==1,] <- "Exclusive"
   
   pheatmap(weight, scale="none",
            cellwidth = 60, cellheight = 20,
            color=colorRampPalette(rev(brewer.pal(n=7, name="RdYlBu")))(10), breaks=seq(0,1,.1),
-           cluster_rows=FALSE, show_rownames=TRUE, cluster_cols=FALSE, show_colnames=TRUE,
+           cluster_rows=FALSE, show_rownames=TRUE, cluster_cols=FALSE, show_colnames=show_colnames,
            annotation_row=anno_row, display_numbers=TRUE, main=main, ...)
 }
 
 
 
-############################################
-## Fisher's method for combining p-values ##
-############################################
 
-fisher <- function(pvec){
-  n <- length(pvec)
-  chisq <- -2*sum(log(pvec))
-  p <- pchisq(chisq, df=2*n, lower.tail=FALSE)
-  return(p)
-}

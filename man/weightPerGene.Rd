@@ -7,7 +7,7 @@
 
 \description{
   This is a convenience function that extracts weights (a.k.a. empirical
-  gene set membership) of a list of genes of interest from a weight
+  gene set membership) of a vector of genes of interest from a weight
   list, which is typically computed by \code{FUNNEL.GSEA}.
 }
 
@@ -18,7 +18,7 @@ weightPerGene(weight.list, genesOfInterest)
 \arguments{
   \item{weight.list}{A list of weights (a.k.a. empirical gene set
   membership) computed from the elastic-net regression. }
-  \item{genesOfInterest}{A list of genes of interest. }
+  \item{genesOfInterest}{A vector of genes of interest. }
 }
 
 %% \details{
@@ -32,7 +32,7 @@ weightPerGene(weight.list, genesOfInterest)
 \references{
   Yun Zhang, Juilee Thakar, Xing Qiu (2016) FUNNEL-GSEA: FUNctioNal ELastic-net
   Regression in time-course Gene Set Enrichment Analysis, submitted to
-  Nucleic Acids Research.
+  Bioinformatics.
 }
 
 \author{

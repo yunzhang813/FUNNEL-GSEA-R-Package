@@ -12,7 +12,7 @@
 }
 
 \usage{
-plotWeight(weight.list, geneset.index, main="Weight", ...)
+plotWeight(weight.list, geneset.index, main="Weight", show_colnames=TRUE, ...)
 }
 
 \arguments{
@@ -20,25 +20,20 @@ plotWeight(weight.list, geneset.index, main="Weight", ...)
   genes in each gene set.  This object is typically obtained from
   \code{FUNNEL.GSEA}. }
   \item{geneset.index}{A specific index or name of the geneset to be plotted. }
-  \item{main}{The title of the figure. }
+  \item{main}{The title of the figure. See \code{pheatmap}.}
+  \item{show_colnames}{An indicator if to show column names. See \code{pheatmap}.}
   \item{...}{Other graphical parameters to be passed to function \code{pheatmap()}.}
 }
 
 \references{
   Yun Zhang, Juilee Thakar, Xing Qiu (2016) FUNNEL-GSEA: FUNctioNal ELastic-net
   Regression in time-course Gene Set Enrichment Analysis, submitted to
-  Nucleic Acids Research.
+  Bioinformatics.
 }
 
 \author{
   Yun Zhang, Juilee Thakar, Xing Qiu
 }
-
-%\note{
-%%  ~~further notes~~
-%}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{\code{\link{pheatmap}}
 }

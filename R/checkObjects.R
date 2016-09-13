@@ -2,21 +2,16 @@
 ## checkInputs(X,time,geneset) ##
 #################################
 
-checkInputs <- function(X,time,geneset){
-  ## check ncol(X)==length(time)
-  if (ncol(X)!=length(time)){
-    stop("Number of columns in 'X' should be the same as length of 'time'.")
+checkInputs <- function(X, genesets){
+  ## 'genesets' should be a list
+  if (!is.list(genesets)){
+    stop("'genesets' is not in required format.")
   }
   
-  ## check 'geneset' should be a list
-  if (!is.list(geneset)){
-    stop("The 'geneset' should be a list.")
+  ## rownames(X) and genesets must use the same gene annotation
+  if (sum(rownames(X) %in% unlist(genesets))<1){
+    stop("'X' is not in required format. Genes in rows and time points in columns. Row names should be the gene IDs using the same annotation as in 'genesets'.")
   }
   
-  ## check rownames(X) and geneset use the same gene annotation
-  if (sum(rownames(X) %in% unlist(geneset))<100){
-    stop("Row names of 'X' should be denoted as gene names, and they should be using the same annotation as the genes in 'geneset'.")
-  }
-  
-  return(list(X=X,time=time,geneset=geneset))
+  return(list(X=X, genesets=genesets))
 }
