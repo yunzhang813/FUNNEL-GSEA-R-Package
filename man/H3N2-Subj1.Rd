@@ -25,8 +25,9 @@
       by \code{tt}.}
     \item{\code{tt}}{A vector of ordered time points.}
     \item{\code{genesets}}{A list of 186 MSigDB:KEGG gene sets.
-      Each gene set is an element of the list. Genes in \code{genesets}
-      should be annotated in the same way rownames of the \code{X} matrix does.}
+      Each gene set is an element of the list. Gene set names are as 
+      element names in the list. Genes in \code{genesets} should be
+      annotated in the same way rownames of the \code{X} matrix does.}
   }
 }
 

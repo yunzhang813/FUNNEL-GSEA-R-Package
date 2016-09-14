@@ -4,7 +4,7 @@ author: "Yun Zhang, Juilee Thakar, Xing Qiu"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{FUNNEL-GSEA: R Package}
+  %\VignetteIndexEntry{FUNNEL-GSEA R Package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -27,7 +27,7 @@ In this vignette, we will introduce the one-step function for carrying out the F
 
 # FUNNEL one-step function
 
-Load the sample data.
+Load sample data.
 ```{r data}
 data("H3N2-Subj1")
 ```

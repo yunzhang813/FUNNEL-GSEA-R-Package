@@ -30,7 +30,8 @@ FUNNEL.GSEA(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)),
   \item{tt}{A vector of ordered unique time points.}
   \item{genesets}{A list of pre-defined gene sets.  Each element of this
   list is a vector of gene names that are rownames of the \code{X}
-  matrix. Note that due to data pre-processsing, many genes in genesets
+  matrix. Each element should have gene set name as element name.
+  Note that due to data pre-processsing, many genes in genesets
   may not be present in \code{rownames(X)}. Internally, we define a new
   genesets object that is a collection of the intersection of each
   pre-defined pathway and \code{rownames(X)} for the actual computation. }

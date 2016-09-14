@@ -9,7 +9,7 @@ checkInputs <- function(X, tt, genesets){
   }
   ## gene set names much be stored in the names of the list
   if (is.null(names(genesets))){
-    stop("'genesets' must have names.")
+    stop("'genesets' must have gene set names.")
   }
   
   ## tt should be numerical vector
