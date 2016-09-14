@@ -82,7 +82,7 @@ gene.i <- c("C5AR1", "C3AR1")
 ## They belong to the following two pathways
 newGeneset.i <- newGenesets[c("NEUROACTIVE_LIGAND_RECEPTOR_INTERACTION", "COMPLEMENT_AND_COAGULATION_CASCADES")]
 
-## The response is just the smoothed curves of these two genes C3AR1
+## The response is just the smoothed curves of these two genes
 yfd <- fdexpr[gene.i]
 
 ## Let us use the first 3 eigen-functions of both pathways as covariates
@@ -90,14 +90,13 @@ xfd <- FUNNEL:::PCA.genesets(fdexpr, newGeneset.i, nharm = 3, centerfns = FALSE)
 
 ## Calculate the equivalent multivariate regression datasets
 equiv <- equiv.regression(yfd, xfd, threshold = 0.01)
-Y <- equiv$y; colnames(Y) <- gene.i     #3x7 matrix
+Y <- equiv$y; colnames(Y) <- gene.i     #3x2 matrix
 X <- equiv$X                            #3x6 matrix
 colnames(X) <- paste(rep(names(newGeneset.i), each=3), rep(paste0("eigfun", 1:3), length(newGeneset.i)), sep=".")
 
 ## Now we can run multivariate elastinet regression on X and Y, as
 ## implemented in package quadrupen
-en <- elastic.net(X, Y[, "C3AR1"], lambda1 = 0.4, lambda2 = 0.1,
-                             intercept = FALSE, normalize = FALSE)
+en <- elastic.net(X, Y[, "C3AR1"], lambda1 = 0.4, lambda2 = 0.01, intercept = FALSE, normalize = FALSE)
 
 ## beta.en are the regression coefficients
 beta.en <- as.numeric(attributes(en)$coef)

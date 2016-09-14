@@ -75,7 +75,7 @@ PCA.genesets <- function(fdexpr, genesets, nharm=3, centerfns=FALSE)
 ## FUNCTION: getBeta() ## PCA.genesets(), equiv.regression()
 #########################
 
-getBeta <- function(fdexpr, gene.i, geneset.i, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.1)
+getBeta <- function(fdexpr, gene.i, geneset.i, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.01)
 {
   ## equivalent regression
   yfd <- fdexpr[gene.i]
@@ -97,7 +97,7 @@ getBeta <- function(fdexpr, gene.i, geneset.i, nharm=3, centerfns=FALSE, equiv.t
 ## FUNCTION: getWeightMatrix() ## getBeta()
 #################################
 
-getWeightMatrix <- function(fdexpr, genesets, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.1, verbose=FALSE)
+getWeightMatrix <- function(fdexpr, genesets, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.01, verbose=FALSE)
 {
   genenames <- fdexpr$fdnames$reps
   weight <- matrix(NA, length(genenames), length(genesets))

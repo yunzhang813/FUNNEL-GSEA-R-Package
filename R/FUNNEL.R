@@ -153,7 +153,7 @@ FUNNEL.GSEA <- function(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)), s
 # sig.genesets = significant gene sets
 # Fstats = functional F-statistics per gene
 {
-  checkInputs(X, genesets)
+  checkInputs(X, tt, genesets)
   ## Standardize timepoint and X so that the optimum roughness/L1/L2
   ## penality parameters are applicable
   tt <- (tt - min(tt))/diff(range(tt))
