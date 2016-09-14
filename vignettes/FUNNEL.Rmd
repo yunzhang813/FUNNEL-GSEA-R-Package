@@ -4,7 +4,7 @@ author: "Yun Zhang, Juilee Thakar, Xing Qiu"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{FUNNEL-GSEA R Package Vignette}
+  %\VignetteIndexEntry{FUNNEL-GSEA: R Package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
