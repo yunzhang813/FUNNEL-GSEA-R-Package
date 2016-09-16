@@ -9,7 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 ```{r global_options, include=FALSE}
-knitr::opts_chunk$set(warning = FALSE, message = FALSE, cache = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 ```
                       
 # Introduction
@@ -44,7 +44,7 @@ system.time(result <- FUNNEL.GSEA(X, tt, genesets))
 
 If the users are interested in some specific genes, they may obtain the estimated weights (a.k.a. empirical gene set membership) by using the following function based on the `FUNNEL.GSEA` result.
 
-```{r, weightPerGene}
+```{r weightPerGene}
 est.weights <- weightPerGene(result$weight.list, genesOfInterest=genesets[["PRIMARY_IMMUNODEFICIENCY"]])
 ```
 
@@ -53,7 +53,7 @@ It returns a list of length of `length(genesOfInterest)`. If a gene belongs mult
 ### Weight plot
 
 The users can also plot the (non-zero) weights (a.k.a. empirical gene set membership) obtained from `FUNNEL.GSEA` for a specific gene set. For example, the (non-trivial) empirical membership for the Primary Immunodeficiency pathway is 
-```{r, plotWeight, fig.width=5, fig.height=6}
+```{r plotWeight, fig.width=5, fig.height=6}
 plotWeight(result$weight.list, geneset.index="PRIMARY_IMMUNODEFICIENCY")
 ```
 
@@ -65,7 +65,7 @@ In this package, we also provide some individual functions for the key parts of 
 
 Firstly, the following data processing is performed internally in the `FUNNEL.GSEA` function.
 
-```{r, data-process}
+```{r data-process}
 library(fda)
 
 ## Remove genes in predefined gene sets that are not present in X the filtered input data
@@ -86,7 +86,7 @@ fdexpr <- smooth.basis(tt2, t(X2), mypar)$fd
 
 `FPCA.Fstats` takes time-course expression data and time points as input values. By using Functional Principal Component Analysis (FPCA) techniques, it returns the functional F-statistic for each gene. For more details, please refer to *Wu, S. and Wu, H., 2013. More powerful significant testing for time course gene expression data using functional principal component analysis approaches. BMC bioinformatics, 14(1), p.1.*
 
-```{r, FPCA.Fstats}
+```{r FPCA.Fstats}
 ## Get functional F-statistics
 Fstats <- FPCA.Fstats(X2, tt2)
 
@@ -102,7 +102,7 @@ and response (`y`).  Running penalized (or ordinary least square)
 regression on `y` and `Xmat` is equivalent to the corresponding concurrent
 functional regression with constant beta.
 
-```{r, equiv.regression}
+```{r equiv.regression}
 library(quadrupen)
 
 ## Take genes C5AR1 and C3AR1 as two examples
@@ -142,7 +142,7 @@ test group (the gene set of interest).  The correlation of the
 background genes is assumed to be zero.  Pre-calculated weights are
 typically computed by function `FUNNEL.GSEA`.
 
-```{r, wMWUTest}
+```{r wMWUTest}
 gg1 <- newGenesets[["GLYCOLYSIS_GLUCONEOGENESIS"]]
 ww1 <- result$weight.list[["GLYCOLYSIS_GLUCONEOGENESIS"]]
 rho <- result$correlation
@@ -158,6 +158,6 @@ result$pvals["GLYCOLYSIS_GLUCONEOGENESIS"]
 
 # Session Info
 
-```{r}
+```{r sessionInfo}
 sessionInfo()
 ```
