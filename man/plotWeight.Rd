@@ -12,7 +12,7 @@
 }
 
 \usage{
-plotWeight(weight.list, geneset.index, main="Weight", show_colnames=TRUE, ...)
+plotWeight(weight.list, geneset.index, main="Weight", ...)
 }
 
 \arguments{
