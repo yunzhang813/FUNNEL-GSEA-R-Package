@@ -30,11 +30,13 @@ FPCA.Fstats(X, tt, rr=rep(1,length(tt)), selection_k="FVE", FVE_threshold=0.9)
 
 \details{
   Technical details of FPCA procedure on time-course expression data is documented in 
-  \cite{Wu, S. and Wu, H., 2013. More powerful significant testing for time course gene expression data using functional principal component analysis approaches. BMC bioinformatics, 14(1), p.1.}
+  \cite{Wu, S. and Wu, H., 2013. BMC bioinformatics.}
 }
 
 \value{
-  A vector of F-statistics.
+  A vector of F-statistics. The larger the F-statistic is, the more evidence there is for the temporally differentially expressed gene (TDEG).
+  
+  Note: although the functional F-statistics are defined as ratios of variance between the constant expression model (null model) and the alternative model; due to the nature of functional data analysis, the functional F-statistics may not follow a standard F-distribution under the null.  To select significant TDEGs, we must resort to a resampling method.  Please consult the following paper for more details.
 }
 
 \references{
@@ -50,9 +52,16 @@ FPCA.Fstats(X, tt, rr=rep(1,length(tt)), selection_k="FVE", FVE_threshold=0.9)
 ## Load the sample data
 data("H3N2-Subj1")
 
-## Get functional F-statistics
-Fstats <- FPCA.Fstats(X, tt)
+## Standardize time and X as in FUNNEL.GSEA
+tt2 <- (tt - min(tt))/diff(range(tt))
+X2 <- t(scale(t(X)))
 
+## Get functional F-statistics
+Fstats <- FPCA.Fstats(X2, tt2)
+
+## Sort the F-statistics from the largest to the smallest. 
+## The top genes are more "significant".
+sorted.genes <- names(sort(Fstats, decreasing = TRUE))
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the

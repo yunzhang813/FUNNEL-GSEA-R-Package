@@ -8,7 +8,7 @@
 \description{
   This is a convenience function that extracts weights (a.k.a. empirical
   gene set membership) of a vector of genes of interest from a weight
-  list, which is typically computed by \code{FUNNEL.GSEA}.
+  list, which is typically computed by \code{FUNNEL.GSEA()}.
 }
 
 \usage{
@@ -55,7 +55,7 @@ data("H3N2-Subj1")
 
 ## It takes about 10 minutes to run on my Laptop; YMMV.
 \dontrun{t1 <- system.time(results1 <- FUNNEL.GSEA(X, tt, genesets=genesets))
-    weightPerGene(rr1$weight.list, c("TLR5", "C3AR1"))
+    weightPerGene(results1$weight.list, c("TLR5", "C3AR1"))
 }
 
 }

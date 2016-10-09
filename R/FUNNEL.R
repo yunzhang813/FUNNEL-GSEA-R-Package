@@ -141,7 +141,7 @@ FUNNELtest <- function(fdexpr, genesets, Fstats, rho, df, nharm=3, centerfns=FAL
 ## FUNCTION: FUNNEL.GSEA() ##
 #############################
 
-FUNNEL.GSEA <- function(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="FVE", FVE_threshold=0.9, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.01, alpha.level=0.05)
+FUNNEL.GSEA <- function(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)), selection_k="FVE", FVE_threshold=0.9, nharm=3, centerfns=FALSE, equiv.threshold=0.01, lam1=0.4, lam2=0.01, alpha.level=0.05, sort=TRUE)
 ### INPUT ###
 # X = original expression matrix
 # tt = origninal tt points
@@ -169,8 +169,10 @@ FUNNEL.GSEA <- function(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)), s
   fdexpr <- smoothExpr(X, tt, lambda=lambda)
   ## FUNNEL test
   FUNNEL.out <- FUNNELtest(fdexpr, genesets, Fstats=Fstats, rho=rho.hat, df=sum(rr)-1, nharm=nharm, centerfns=FALSE, equiv.threshold=equiv.threshold, lam1=lam1, lam2=lam2)
+  ## sort the pvalues
+  if(sort){FUNNEL.out$pvals <- sort(FUNNEL.out$pvals)}
   ## significant pathways
-  sig.genesets <- names(genesets)[FUNNEL.out$pvals<alpha.level]
+  sig.genesets <- names(FUNNEL.out$pvals)[FUNNEL.out$pvals<alpha.level]
   ## output
   return(list("pvals"=FUNNEL.out$pvals, "weight.list"=FUNNEL.out$weight.list, "correlation"=rho.hat, "sig.genesets"=sig.genesets, "Fstats"=Fstats))
 }
@@ -216,7 +218,7 @@ weightPerGene <- function(weight.list, genesOfInterest)
 ## FUNCTION: plotWeight() ## 
 ############################
 
-plotWeight <- function(weight.list, geneset.index, main="Weight", show_colnames=TRUE, ...)
+plotWeight <- function(weight.list, geneset.index, main="Weight", ...)
 ## Plot of non-zero weights per gene set
 {
   weight <- sort(weight.list[[geneset.index]], decreasing=TRUE)
@@ -228,15 +230,16 @@ plotWeight <- function(weight.list, geneset.index, main="Weight", show_colnames=
   genes <- rownames(weight)
   genesets <- lapply(weight.list,names)
   membership <- table(unlist(genesets))
-  anno_row <- as.data.frame(membership[genes])
-  names(anno_row) <- "Membership"
-  anno_row[anno_row>1,] <- "Overlapping"
-  anno_row[anno_row==1,] <- "Exclusive"
+  anno_row <- as.matrix(membership[genes])
+  colnames(anno_row) <- "Membership"
+  anno_row[anno_row>1] <- "Overlapping"
+  anno_row[anno_row==1] <- "Exclusive"
+  anno_row <- as.data.frame(anno_row)
   
   pheatmap(weight, scale="none",
            cellwidth = 60, cellheight = 20,
-           color=colorRampPalette(rev(brewer.pal(n=7, name="RdYlBu")))(10), breaks=seq(0,1,.1),
-           cluster_rows=FALSE, show_rownames=TRUE, cluster_cols=FALSE, show_colnames=show_colnames,
+           color=colorRampPalette(rev(brewer.pal(n=7, name="RdYlBu")))(100), breaks=seq(0,1,.01),
+           cluster_rows=FALSE, show_rownames=TRUE, cluster_cols=FALSE, show_colnames=TRUE,
            annotation_row=anno_row, display_numbers=TRUE, main=main, ...)
 }
 

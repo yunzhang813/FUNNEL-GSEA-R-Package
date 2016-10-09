@@ -7,11 +7,11 @@
 
 \description{
     This is an extension of the two-sample Mann-Whitney U test (a.k.a. rank sum test)
-    which incorporates pre-calculated weights for the correlated inputs in the
+    which incorporates pre-calculated weights for the correlated observations in the
     test group. Note that the pre-calculated correlation only applies to the
     test group (the gene set of interest).  The correlation of the
     background genes is assumed to be zero.  Pre-calculated weights are
-    typically computed by function \code{FUNNEL.GSEA}.
+    typically computed by function \code{FUNNEL.GSEA()}.
 }
 
 \usage{
@@ -32,7 +32,7 @@ wMWUTest(test.index, statistics, weight=NULL, correlation=0, df=Inf)
       group. Genes in the second group are assumed to be independent
       of each other and of the genes in the test group.}
     \item{df}{Degrees of freedom, based on which the correlation is
-    estimated. For \code{FUNNEL.GSEA}, we define \code{df} == number of time points -1. }
+    estimated. For \code{FUNNEL.GSEA}, we define \code{df} = number of time points -1. }
 }
 
 \details{
@@ -68,7 +68,7 @@ wMWUTest(test.index, statistics, weight=NULL, correlation=0, df=Inf)
 \seealso{
   \code{\link{wilcox.test}} performs the standard Wilcoxon rank sum test.
   
-  \code{\link[limma]{rankSumTestWithCorrelation}} performs the correlation extention of the rank sum test.
+  \code{\link[limma]{rankSumTestWithCorrelation}} from the \code{limma} package performs the correlation extention of the rank sum test.
 }
 
 \examples{
@@ -79,7 +79,7 @@ stat <- rnorm(100)
 ## We define the first 20 "genes" to be a gene set
 test.index <- 1:20
 
-## Add some true signal (>) to the first 10 test genes
+## Add some true signal (>) to the first 8 test genes
 stat[1:8] <- stat[1:8]+1 
 
 pL <- wilcox.test(stat[test.index], stat[-test.index], alternative = "less")$p.value
@@ -102,7 +102,7 @@ ww1 <- runif(length(test.index), 0, 1)
 wMWUTest(test.index, stat, weight=ww1, correlation=0.1)
 
 ## Second set of weight: All the signal-carrying genes have weight==1;
-## the rest 15 genes have less weights.  Now the p-value is
+## the rest 12 genes have less weights.  Now the p-value is
 ## signficant again!
 ww2 <- c(rep(1, 8), runif(12, 0, 1))
 wMWUTest(test.index, stat, weight=ww2, correlation=0.1)
@@ -116,16 +116,16 @@ data("H3N2-Subj1")
 
     genesets2 <- lapply(genesets, function(z) { intersect(z, rownames(X)) })
     gg1 <- genesets2[["GLYCOLYSIS_GLUCONEOGENESIS"]]
-    ww1 <- rr1$weight.list[["GLYCOLYSIS_GLUCONEOGENESIS"]]
-    rho <- rr1$correlation
+    ww1 <- results1$weight.list[["GLYCOLYSIS_GLUCONEOGENESIS"]]
+    rho <- results1$correlation
 
     ## The test
-    o1 <- wMWUTest(gg1, rr1$Fstats, ww1, rho, df=15)
+    test1 <- wMWUTest(gg1, results1$Fstats, ww1, rho, df=15)
     ## p-value for the gene set test
-    o1["greater"]
+    test1["greater"]
 
     ## Should be the same as the p-value below
-    rr1$pvals["GLYCOLYSIS_GLUCONEOGENESIS"]
+    results1$pvals["GLYCOLYSIS_GLUCONEOGENESIS"]
 
 }
 }

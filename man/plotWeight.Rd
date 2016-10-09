@@ -21,14 +21,13 @@ plotWeight(weight.list, geneset.index, main="Weight", show_colnames=TRUE, ...)
   \code{FUNNEL.GSEA}. }
   \item{geneset.index}{A specific index or name of the geneset to be plotted. }
   \item{main}{The title of the figure. See \code{pheatmap}.}
-  \item{show_colnames}{An indicator if to show column names. See \code{pheatmap}.}
   \item{...}{Other graphical parameters to be passed to function \code{pheatmap()}.}
 }
 
 \references{
-  Yun Zhang, Juilee Thakar, Xing Qiu (2016) FUNNEL-GSEA: FUNctioNal ELastic-net
-  Regression in time-course Gene Set Enrichment Analysis, submitted to
-  Bioinformatics.
+  \cite{Yun Zhang, Juilee Thakar, Xing Qiu (2016) FUNNEL-GSEA: FUNctioNal ELastic-net
+  Regression in Time-course Gene Set Enrichment Analysis, submitted to
+  Bioinformatics.}
 }
 
 \author{

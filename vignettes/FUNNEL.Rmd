@@ -1,15 +1,17 @@
 ---
-title: "FUNNEL-GSEA: R Package"
+title: "FUNNEL-GSEA R Package"
 author: "Yun Zhang, Juilee Thakar, Xing Qiu"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+bibliography: bibliography.bib
 vignette: >
   %\VignetteIndexEntry{FUNNEL-GSEA R Package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
 ```{r global_options, include=FALSE}
-knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, cache = TRUE)
 ```
                       
 # Introduction
@@ -20,50 +22,99 @@ library(FUNNEL)
 
 This R package is built for FUNNEL-GSEA. It is a statistical inference framework for Gene Set Enrichment Analysis (GSEA) based on FUNctioNal ELastic-net regression (FUNNEL), which utilizes the temporal information based on functional principal component analysis (FPCA), and disentangles the effects of **overlapping** genes by a functional extension of the elastic-net regression. It then performs hypothesis testing for gene sets by an extension of Mann-Whitney U test which is based on weighted rank sums computed from correlated observations.
 
-In this vignette, we will introduce the one-step function for carrying out the FUNNEL analysis, and also some useful functions embedded in the FUNNEL framework. 
+In this vignette, we will introduce the one-step function for carrying out the FUNNEL analysis, and also some useful functions contained in the FUNNEL framework. 
 
-* The one-step function, `FUNNEL.GSEA`, takes pre-processed data as inputs and runs the whole testing procedure automatically. There are also post-analysis tools such as `weightPerGene` and `plotWeight` to interpret and illustrate FUNNEL results.
-* For more advanced users, we will introduce individual functions such as `FPCA.Fstats`, `equiv.regression` and `wMWUTest`. These are the key building blocks in the FUNNEL framework, and also quite useful by themselves. The users may find more flexibity by using these functions for their own analyses. 
+* The one-step function, `FUNNEL.GSEA()`, takes pre-processed data and a list of gene sets as inputs and runs the whole testing procedure automatically. There are also some post-analysis tools such as `weightPerGene()` and `plotWeight()` that faciliates the interpretation and visulization of the FUNNEL result.
+* For advanced users, we will introduce functions for individual steps, such as `FPCA.Fstats()`, `equiv.regression()` and `wMWUTest()`. They are the key building blocks of the FUNNEL framework, and also useful by themselves. The users may find more flexibity by using these functions for their own analyses. 
 
 # FUNNEL one-step function
 
-Load sample data.
+## Sample data
+
+For convenience, a set of real temporal gene expression data is included in the `FUNNEL` package. Gene expression data of human influenza infection (@huang2011temporal) were downloaded from Gene Expression Omnibus series GSE52428. 17 healthy adults with live influenza (H3N2/Wisconsin) were examined and changes in host peripheral blood gene expression were collected at 16 time points over 132 hours. Among the 17 subjects, nine developed symptomatic infection and eight had asymptomatic infection. We include subject 1 (symptomatic) as sample data for illustration purpose.  These data were log2-transformed and pre-filtered by the IQR criterion (>=0.3).
+
+We also include 186 CP:KEGG pathways with a focus on human immuno-response to infectious diseases with the `FUNNEL` package.  These pathways are available from the [Broad Institute](http://software.broadinstitute.org/gsea/msigdb/collections.jsp). For studies that do not focus on immunology, an alternative list of pathways should be used instead.
+
+The sample data and pathways can be loaded by the following command.  The expression data is called `X`, which is a 11189x16 dimensional matrix.  A vector of ordered length 16, `tt`, is also provided with this package. It indicates the sampling time points of these data.  The 186 CP:KEGG pahtways are formatted as a data list called `genesets`. 
+
 ```{r data}
 data("H3N2-Subj1")
 ```
 
-The one-step function is contained in `FUNNEL.GSEA`. It takes pre-processed data as input and runs the FUNNEL test automatically. For details of data pre-processing, please see `help("H3N2-Subj1")`. (It takes about 5~10 minutes to run the following.)
+More details about the sample data can be found in `help("H3N2-Subj1")`. 
+
+## One-step analysis
+
+The most user-friendly function provided by `FUNNEL` is `FUNNEL.GSEA()`. It inputs pre-processed data and a list of gene sets and runs several steps of the FUNNEL procedure automatically.  
+
+It takes about 5~10 minutes to run the following code on a modern laptop computer.
 
 ```{r, onestep}
 system.time(result <- FUNNEL.GSEA(X, tt, genesets))
+```
+
+Once the computation is done, we will have a result list that contains the following useful objects.
+
+1. `pvals` is a vector of unadjusted p-values for pre-defined gene sets.
+2. `weight.list` is a list of weights (a.k.a. empirical gene set membership) computed from the elastic-net regression.
+3. `correlation` is the mean intergene correlation coefficient estimated from genes within each gene set.
+4. `sig.genesets`	is a vector of names (or indices) of significant gene sets at 5% significance level (default).
+5. `Fstats` is 	a vector of F-statistics, which are gene-level summary statistics used in extended Mann-Whitney U test.
+
+For Subject 1 (symptomatic), `FUNNEL.GSEA` identified the following significant gene sets that responded to the influenza infection. Many of these pathways listed here, such as the B cell receptor signaling, T cell receptor signaling, NOD-like signaling, RIG-I-like receptor signaling, Toll-like receptor signaling,  and FC-Epsilon-RI signaling are well documented immune signaling pathways that send signals that lead to the activation of various cell-specific immune activities.
+
+```{r, sig.genesets}
+result$sig.genesets
+```
+
+### Altering default parameter settings
+
+Users may customize their own studies by varing the default setting in `FUNNEL.GSEA()`. Details about the default parameter setting can be found in `help("FUNNEL.GSEA")`. The following code is a simple example, which uses 2 eigenfunctions and different panelty values for the elastic-net regression. Many of the immune signaling pathways remain significant.
+
+```{r, onestep-alter}
+result2 <- FUNNEL.GSEA(X, tt, genesets, nharm=2, lam1=0.3, lam2=0.1)
+result2$sig.genesets
 ```
 
 ## Some post-analysis tools
 
 ### Empirical gene set membership
 
-If the users are interested in some specific genes, they may obtain the estimated weights (a.k.a. empirical gene set membership) by using the following function based on the `FUNNEL.GSEA` result.
+We developed the concept of "empirical gene set membership" (quantified by weights) for individual genes. It reflects the empirical evidence trained from the data and illustrates the practical membership for the (overlapping) genes with regard to their belonging gene sets.
+
+If users are interested in some specific genes (for example, all the genes in the Primary Immunodeficiency pathway), the function `weightPerGene()` exracts the estimated weights (a.k.a. empirical gene set membership) from the `FUNNEL.GSEA` result.
 
 ```{r weightPerGene}
 est.weights <- weightPerGene(result$weight.list, genesOfInterest=genesets[["PRIMARY_IMMUNODEFICIENCY"]])
 ```
 
-It returns a list of length of `length(genesOfInterest)`. If a gene belongs multiple pathways, it returns a vector of estimated weights (sum to 1) for each of the overlapping pathways. If a gene is exclusive to one pathway, it returns integer `1`. `NA` means this gene is not presented in the expression data.
+This function returns a list of length of `length(genesOfInterest)`. 
+
+1. If a gene belongs to multiple pathways, it returns a vector of estimated weights (usually, sum to 1) for each of the overlapping pathways. In some cases, the estimated weights can be a zero vector due to LASSO penalty, which means that this gene didn't show any similar expression pattern to other genes in the same pathway. 
+2. If a gene is exclusive to one pathway, it returns integer `1`. 
+3. `NA` means that this gene is not presented in the expression data.
 
 ### Weight plot
 
-The users can also plot the (non-zero) weights (a.k.a. empirical gene set membership) obtained from `FUNNEL.GSEA` for a specific gene set. For example, the (non-trivial) empirical membership for the Primary Immunodeficiency pathway is 
-```{r plotWeight, fig.width=5, fig.height=6}
+Users can also plot the (non-zero) weights (a.k.a. empirical gene set membership) for a specific gene set. The function `plotWeight()` produces a heatmap of weights based on the `FUNNEL.GSEA` result. For example, the following code plots the (non-trivial) empirical membership for the Primary Immunodeficiency pathway.
+
+```{r plotWeight,  fig.width=5, fig.height=6}
 plotWeight(result$weight.list, geneset.index="PRIMARY_IMMUNODEFICIENCY")
 ```
 
-# More advanced functions
+We may see how the estimated weights are changed by varying the default setting.
 
-In this package, we also provide some individual functions for the key parts of the FUNNEL-GSEA framework. Advanced users may find these functions helpful for conducting their customized analyses.
+```{r plotWeight2,  fig.width=5, fig.height=8}
+plotWeight(result2$weight.list, geneset.index="PRIMARY_IMMUNODEFICIENCY")
+```
 
-### Some extra data processing
+# Advanced functions
 
-Firstly, the following data processing is performed internally in the `FUNNEL.GSEA` function.
+In this package, we also provide functions for performing the key parts of the FUNNEL-GSEA framework. Advanced users may find these functions helpful for conducting their customized analyses.
+
+### Additional data processing
+
+First of all, the following additional data processing is performed internally in `FUNNEL.GSEA()`.
 
 ```{r data-process}
 library(fda)
@@ -72,7 +123,8 @@ library(fda)
 genenames <- rownames(X)
 newGenesets <- lapply(genesets, function(z) { intersect(z, genenames) } )
 
-## Standardize timepoint and X so that the optimum roughness/L1/L2 penality parameters are applicable
+## Standardize time and X so that the smoothing penality is applicable to any real data
+## with comparable signal-to-noise ratio
 tt2 <- (tt - min(tt))/diff(range(tt))
 X2 <- t(scale(t(X)))
 
@@ -82,25 +134,47 @@ mypar <- fdPar(mybasis, 2, lambda=10^-3.5)
 fdexpr <- smooth.basis(tt2, t(X2), mypar)$fd
 ```
 
+1. We recommend to standardize time (into [0,1] interval), so that the smoothing penalty is comparable across different data sets and the default value (`lambda=10^-3.5`) make sense in these situations. 
+2. We recommend the use of standardized (z-transformation) expression data for the gene set analysis because usually the "relationship" between genes is defined through the similarity of the shape, not the magnitude, of their expression patterns.
+3. We use functional data analysis framework (R package `fda`) to turn discrete expression data into smooth temporal expression functions (the R object `fdexpr`) that are needed for subsequent analyses.
+
+
 ### Functional F-statistics for time-course gene expression data
 
-`FPCA.Fstats` takes time-course expression data and time points as input values. By using Functional Principal Component Analysis (FPCA) techniques, it returns the functional F-statistic for each gene. For more details, please refer to *Wu, S. and Wu, H., 2013. More powerful significant testing for time course gene expression data using functional principal component analysis approaches. BMC bioinformatics, 14(1), p.1.*
+The function `FPCA.Fstats()` takes time-course expression data and time points as input values. By using Functional Principal Component Analysis (FPCA) techniques, it returns the functional F-statistic for each gene. For more details, please refer to @wu2013more.
 
 ```{r FPCA.Fstats}
 ## Get functional F-statistics
 Fstats <- FPCA.Fstats(X2, tt2)
 
-## The following should be the same
-identical(Fstats, result$Fstats)
+## Sort the F-statistics from the largest to the smallest. 
+## The top genes are more "significant".
+sorted.genes <- names(sort(Fstats, decreasing = TRUE))
 ```
+
+For time-course gene expression data, a temporally differentially expressed gene (TDEG) can be defined as a gene with significant non-constant expression pattern across time points. In other words, we want to test the following hypotheses, for gene $i$
+$$ 
+H_{i0}: x_i(t) = \mu_i \quad \text{vs.} \quad H_{i1}: x_i(t) \ne \mu_i \quad \text{for} \quad t \in [t_1,t_n].
+$$
+Under $H_{i0}$, $x_i(t)$ is estimated by a function with constant value $\hat{\mu}_i$ (the sample mean expression for the  $i$th gene); under $H_{i1}$ , $\hat{x}_i(t)$ defined in Equation (1) is used instead. We use the following functional $F$-statistic to summarize the information contained by each gene over time:
+$$
+F_i = \frac{RSS_i^0 - RSS_i^1}{RSS_i^1},
+$$
+where $RSS_i^0$ and $RSS_i^1$ are the residual sum of squares under the null and the alternative, respectively. This summary statistic can be viewed as a "signal-to-noise" ratio for the functional data. The larger $F_i$ is, the more significant the $i$th gene is.
+
+1. Note that we use these test statistics as gene-level summary statistics for gene set analysis in `FUNNEL`.
+2. Although this $F$-statistic is defined as a ratio of variance; due to the nature of functional data analysis, $F_i$ may not follow a standard $F$-distribution under $H_0$.  To select significant TDEGs, we must resort to a resampling method.  Please consult @wu2013more for more details.
+
 
 ### An equivalence between functional and multivariate regression
 
-`equiv.regression` takes functional covariates (`xfd`) and response (`yfd`) as
-input, and returns a list of equivalent multivariate covariates (`Xmat`)
-and response (`y`).  Running penalized (or ordinary least square)
+One important computation shortcut we used in `FUNNEL` is the fact that there is a way to turn a (penalized) concurrent functional linear regression analysis into an **equivalent** multivariate linear regression.  Technical details can be found in @zhang2016FUNNEL, Supplementary Text, Section 2.
+
+The function `equiv.regression()` takes functional covariates `xfd` and response `yfd` as
+inputs, and returns a list of equivalent multivariate covariates `Xmat`
+and response `y`.  Running penalized (or ordinary least square)
 regression on `y` and `Xmat` is equivalent to the corresponding concurrent
-functional regression with constant beta.
+functional regression.
 
 ```{r equiv.regression}
 library(quadrupen)
@@ -114,33 +188,56 @@ newGeneset.i <- newGenesets[c("NEUROACTIVE_LIGAND_RECEPTOR_INTERACTION", "COMPLE
 ## The response is just the smoothed curves of these two genes
 yfd <- fdexpr[gene.i]
 
+##############
+## Method 1 ##
+##############
+
 ## Let us use the first 3 eigen-functions of both pathways as covariates
 xfd <- FUNNEL:::PCA.genesets(fdexpr, newGeneset.i, nharm = 3, centerfns = FALSE)$harmonics
 
 ## Calculate the equivalent multivariate regression datasets
 equiv <- equiv.regression(yfd, xfd, threshold = 0.01)
-Y <- equiv$y; colnames(Y) <- gene.i     #3x2 matrix
-X <- equiv$X                            #3x6 matrix
-colnames(X) <- paste(rep(names(newGeneset.i), each=3), rep(paste0("eigfun", 1:3),
-                     length(newGeneset.i)), sep=".")
+equiv.Y <- equiv$y; colnames(equiv.Y) <- gene.i     #3x2 matrix
+equiv.X <- equiv$Xmat                               #3x6 matrix
+colnames(equiv.X) <- paste(rep(names(newGeneset.i), each=3), rep(paste0("eigfun", 1:3), length(newGeneset.i)), sep=".")
 
-## Now we can run multivariate elastinet regression on X and Y, as implemented in package quadrupen
-en <- elastic.net(X, Y[, "C3AR1"], lambda1 = 0.4, lambda2 = 0.01,
-                  intercept = FALSE, normalize = FALSE)
+## Now we can run multivariate elastinet regression on the equivalent X and Y, as
+## implemented in package quadrupen
+en <- elastic.net(equiv.X, equiv.Y[, "C3AR1"], lambda1 = 0.4, lambda2 = 0.01, intercept = FALSE, normalize = FALSE)
 
 ## beta.en are the regression coefficients
 beta.en <- as.numeric(attributes(en)$coef)
-names(beta.en) <- colnames(X)
+names(beta.en) <- colnames(equiv.X)
+
+##############
+## Method 2 ##
+##############
+
+## Alternatively, let us try using the first 2 eigen-functions and increase the variance 
+## threshold in the equivalence rotated regression to 0.1.
+xfd2 <- FUNNEL:::PCA.genesets(fdexpr, newGeneset.i, nharm = 2, centerfns = FALSE)$harmonics
+
+## Calculate the equivalent multivariate regression datasets
+equiv2 <- equiv.regression(yfd, xfd2, threshold = 0.1)
+equiv2.Y <- equiv2$y; colnames(equiv2.Y) <- gene.i     #3x2 matrix
+equiv2.X <- equiv2$Xmat                                #3x6 matrix
+colnames(equiv2.X) <- paste(rep(names(newGeneset.i), each=2), rep(paste0("eigfun", 1:2), length(newGeneset.i)), sep=".")
+
+## Now we can run multivariate elastinet regression on the equivalent X and Y, as
+## implemented in package quadrupen
+en2 <- elastic.net(equiv2.X, equiv2.Y[, "C3AR1"], lambda1 = 0.4, lambda2 = 0.01, intercept = FALSE, normalize = FALSE)
+
+## beta.en are the regression coefficients
+beta.en2 <- as.numeric(attributes(en2)$coef)
+names(beta.en2) <- colnames(equiv2.X)
 ```
 
 ### An extended Mann-Whitney U test that incorporates pre-computed weights and correlation
 
-`wMWUTest` is an extension of the two-sample Mann-Whitney U test (a.k.a. rank sum test)
-which incorporates pre-calculated weights for the correlated inputs in the
+The function `wMWUTest()` performs an extension of the two-sample Mann-Whitney U test (a.k.a. rank sum test) which incorporates pre-calculated weights for the correlated observations in the
 test group. Note that the pre-calculated correlation only applies to the
 test group (the gene set of interest).  The correlation of the
-background genes is assumed to be zero.  Pre-calculated weights are
-typically computed by function `FUNNEL.GSEA`.
+background genes is assumed to be zero.  In the context of gene set analysis, these weights are called "empirical gene set membership" which is calculated by function `FUNNEL.GSEA()`.  Users can provide customized weight vectors to `wMWUTest()` to make inference about two-group comparisons.
 
 ```{r wMWUTest}
 gg1 <- newGenesets[["GLYCOLYSIS_GLUCONEOGENESIS"]]
@@ -148,9 +245,9 @@ ww1 <- result$weight.list[["GLYCOLYSIS_GLUCONEOGENESIS"]]
 rho <- result$correlation
 
 ## The test
-o1 <- wMWUTest(gg1, result$Fstats, ww1, rho, df=length(tt2)-1)
+test1 <- wMWUTest(gg1, result$Fstats, ww1, rho, df=length(tt2)-1)
 ## p-value for the gene set test
-o1["greater"]
+test1["greater"]
 
 ## Should be the same as the p-value below
 result$pvals["GLYCOLYSIS_GLUCONEOGENESIS"]
@@ -161,3 +258,5 @@ result$pvals["GLYCOLYSIS_GLUCONEOGENESIS"]
 ```{r sessionInfo}
 sessionInfo()
 ```
+
+# Reference

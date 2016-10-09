@@ -64,13 +64,13 @@ FUNNEL.GSEA(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)),
   \item{lam2}{The L2 (ridge) penalty used in elastic-ent regression. } 
   \item{alpha.level}{Significance level for gene set test (extended
   Mann-Whitney U test). Default to 0.05.} 
+  \item{sort}{An indicator if to sort the p-values from the smallest to 
+  the largest. Default: \code{TRUE}.} 
 }
 
 \details{
-  Technical details of this procedure is documented in Yun Zhang,
-  Juilee Thakar, Xing Qiu (2016) FUNNEL-GSEA: FUNctioNal ELastic-net
-  Regression in time-course Gene Set Enrichment Analysis, submitted to
-  Bioinformatics.
+  Technical details of this procedure is documented in \cite{Yun Zhang,
+  Juilee Thakar, Xing Qiu (2016)}.
 }
 
 \value{
@@ -80,15 +80,16 @@ FUNNEL.GSEA(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)),
   membership) computed from the elastic-net regression. }
   \item{correlation}{Mean intergene correlation coefficient estimated
   from genes within each gene set.}
-  \item{sig.genesets}{A vector of names (or indices) of significant gene sets.}
+  \item{sig.genesets}{A vector of names (or indices) of significant gene sets
+  at \code{alpha.level} (default: 0.05).}
   \item{Fstats}{A vector of F-statistics, which are gene-level summary
   statistics used in extended Mann-Whitney U test.}
 }
 
 \references{
-  Yun Zhang, Juilee Thakar, Xing Qiu (2016) FUNNEL-GSEA: FUNctioNal ELastic-net
-  Regression in time-course Gene Set Enrichment Analysis, submitted to
-  Bioinformatics.
+  \cite{Yun Zhang, Juilee Thakar, Xing Qiu (2016) FUNNEL-GSEA: FUNctioNal ELastic-net
+  Regression in Time-course Gene Set Enrichment Analysis, submitted to
+  Bioinformatics.}
 }
 
 \author{
