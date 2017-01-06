@@ -1,0 +1,9 @@
+# History files
+.Rhistory
+.Rapp.history
+
+# RStudio files
+.Rproj.user/
+
+#
+.gitignore

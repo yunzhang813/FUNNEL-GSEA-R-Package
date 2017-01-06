@@ -12,7 +12,7 @@
 
 <meta name="author" content="Yun Zhang, Juilee Thakar, Xing Qiu" />
 
-<meta name="date" content="2016-10-09" />
+<meta name="date" content="2016-12-10" />
 
 <title>FUNNEL-GSEA R Package</title>
 
@@ -70,13 +70,18 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">FUNNEL-GSEA R Package</h1>
 <h4 class="author"><em>Yun Zhang, Juilee Thakar, Xing Qiu</em></h4>
-<h4 class="date"><em>2016-10-09</em></h4>
+<h4 class="date"><em>2016-12-10</em></h4>
 
 
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(FUNNEL)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## The package can be installed using the following code
+<span class="co"># library(devtools)</span>
+<span class="co"># install_github(&quot;yunzhang813/FUNNEL-GSEA-R-Package&quot;)</span>
+
+## Load the package
+<span class="kw">library</span>(FUNNEL)</code></pre></div>
 <p>This R package is built for FUNNEL-GSEA. It is a statistical inference framework for Gene Set Enrichment Analysis (GSEA) based on FUNctioNal ELastic-net regression (FUNNEL), which utilizes the temporal information based on functional principal component analysis (FPCA), and disentangles the effects of <strong>overlapping</strong> genes by a functional extension of the elastic-net regression. It then performs hypothesis testing for gene sets by an extension of Mann-Whitney U test which is based on weighted rank sums computed from correlated observations.</p>
 <p>In this vignette, we will introduce the one-step function for carrying out the FUNNEL analysis, and also some useful functions contained in the FUNNEL framework.</p>
 <ul>
@@ -89,7 +94,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="sample-data" class="section level2">
 <h2>Sample data</h2>
 <p>For convenience, a set of real temporal gene expression data is included in the <code>FUNNEL</code> package. Gene expression data of human influenza infection (<span class="citation">Huang et al. (2011)</span>) were downloaded from Gene Expression Omnibus series GSE52428. 17 healthy adults with live influenza (H3N2/Wisconsin) were examined and changes in host peripheral blood gene expression were collected at 16 time points over 132 hours. Among the 17 subjects, nine developed symptomatic infection and eight had asymptomatic infection. We include subject 1 (symptomatic) as sample data for illustration purpose. These data were log2-transformed and pre-filtered by the IQR criterion (&gt;=0.3).</p>
-<p>We also include 186 CP:KEGG pathways with a focus on human immuno-response to infectious diseases with the <code>FUNNEL</code> package. These pathways are available from the <a href="http://software.broadinstitute.org/gsea/msigdb/collections.jsp">Broad Institute</a>. For studies that do not focus on immunology, an alternative list of pathways should be used instead.</p>
+<p>We also include 186 CP:KEGG pathways with a focus on human immuno-response to infectious diseases in the <code>FUNNEL</code> package. These pathways are available from the <a href="http://software.broadinstitute.org/gsea/msigdb/collections.jsp">Broad Institute</a>. For studies that do not focus on immunology, an alternative list of pathways should be used instead.</p>
 <p>The sample data and pathways can be loaded by the following command. The expression data is called <code>X</code>, which is a 11189x16 dimensional matrix. A vector of ordered length 16, <code>tt</code>, is also provided with this package. It indicates the sampling time points of these data. The 186 CP:KEGG pahtways are formatted as a data list called <code>genesets</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;H3N2-Subj1&quot;</span>)</code></pre></div>
 <p>More details about the sample data can be found in <code>help(&quot;H3N2-Subj1&quot;)</code>.</p>
@@ -103,7 +108,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 ## Weight calculation... 
 ## Gene set test...</code></pre>
 <pre><code>##    user  system elapsed 
-## 344.202   2.733 347.810</code></pre>
+## 341.607   2.334 345.079</code></pre>
 <p>Once the computation is done, we will have a result list that contains the following useful objects.</p>
 <ol style="list-style-type: decimal">
 <li><code>pvals</code> is a vector of unadjusted p-values for pre-defined gene sets.</li>
@@ -145,7 +150,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 ## [29] &quot;N_GLYCAN_BIOSYNTHESIS&quot;</code></pre>
 <div id="altering-default-parameter-settings" class="section level3">
 <h3>Altering default parameter settings</h3>
-<p>Users may customize their own studies by varing the default setting in <code>FUNNEL.GSEA()</code>. Details about the default parameter setting can be found in <code>help(&quot;FUNNEL.GSEA&quot;)</code>. The following code is a simple example, which uses 2 eigenfunctions and different panelty values for the elastic-net regression. Many of the immune signaling pathways remain significant.</p>
+<p>Users may customize their own studies by varing the default settings in <code>FUNNEL.GSEA()</code>. Details about the default parameter settings can be found in <code>help(&quot;FUNNEL.GSEA&quot;)</code>. The following code is a simple example, which uses 2 eigenfunctions and different panelty values for the elastic-net regression. Many of the immune signaling pathways remain significant. (Default: <code>nharm=3, lam1=0.4, lam2=0.01</code>.)</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">result2 &lt;-<span class="st"> </span><span class="kw">FUNNEL.GSEA</span>(X, tt, genesets, <span class="dt">nharm=</span><span class="dv">2</span>, <span class="dt">lam1=</span><span class="fl">0.3</span>, <span class="dt">lam2=</span><span class="fl">0.1</span>)</code></pre></div>
 <pre><code>## 26 real eigenvalues are negative or zero and are removed!
 ## Weight calculation... 
@@ -185,7 +190,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h3>Empirical gene set membership</h3>
 <p>We developed the concept of “empirical gene set membership” (quantified by weights) for individual genes. It reflects the empirical evidence trained from the data and illustrates the practical membership for the (overlapping) genes with regard to their belonging gene sets.</p>
 <p>If users are interested in some specific genes (for example, all the genes in the Primary Immunodeficiency pathway), the function <code>weightPerGene()</code> exracts the estimated weights (a.k.a. empirical gene set membership) from the <code>FUNNEL.GSEA</code> result.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">est.weights &lt;-<span class="st"> </span><span class="kw">weightPerGene</span>(result$weight.list, <span class="dt">genesOfInterest=</span>genesets[[<span class="st">&quot;PRIMARY_IMMUNODEFICIENCY&quot;</span>]])</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">est.weights &lt;-<span class="st"> </span><span class="kw">weightPerGene</span>(result$weight.list, 
+                             <span class="dt">genesOfInterest=</span>genesets[[<span class="st">&quot;PRIMARY_IMMUNODEFICIENCY&quot;</span>]])</code></pre></div>
 <p>This function returns a list of length of <code>length(genesOfInterest)</code>.</p>
 <ol style="list-style-type: decimal">
 <li>If a gene belongs to multiple pathways, it returns a vector of estimated weights (usually, sum to 1) for each of the overlapping pathways. In some cases, the estimated weights can be a zero vector due to LASSO penalty, which means that this gene didn’t show any similar expression pattern to other genes in the same pathway.</li>
@@ -226,7 +232,7 @@ mybasis &lt;-<span class="st"> </span><span class="kw">create.bspline.basis</spa
 mypar &lt;-<span class="st"> </span><span class="kw">fdPar</span>(mybasis, <span class="dv">2</span>, <span class="dt">lambda=</span><span class="dv">10</span>^-<span class="fl">3.5</span>)
 fdexpr &lt;-<span class="st"> </span><span class="kw">smooth.basis</span>(tt2, <span class="kw">t</span>(X2), mypar)$fd</code></pre></div>
 <ol style="list-style-type: decimal">
-<li>We recommend to standardize time (into [0,1] interval), so that the smoothing penalty is comparable across different data sets and the default value (<code>lambda=10^-3.5</code>) make sense in these situations.</li>
+<li>We recommend to standardize time (into [0,1] interval), so that the smoothing penalty is comparable across different data sets and the default value (<code>lambda=10^-3.5</code>) makes sense in these situations.</li>
 <li>We recommend the use of standardized (z-transformation) expression data for the gene set analysis because usually the “relationship” between genes is defined through the similarity of the shape, not the magnitude, of their expression patterns.</li>
 <li>We use functional data analysis framework (R package <code>fda</code>) to turn discrete expression data into smooth temporal expression functions (the R object <code>fdexpr</code>) that are needed for subsequent analyses.</li>
 </ol>
@@ -260,7 +266,8 @@ F_i = \frac{RSS_i^0 - RSS_i^1}{RSS_i^1},
 gene.i &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;C5AR1&quot;</span>, <span class="st">&quot;C3AR1&quot;</span>)
 
 ## They belong to the following two pathways
-newGeneset.i &lt;-<span class="st"> </span>newGenesets[<span class="kw">c</span>(<span class="st">&quot;NEUROACTIVE_LIGAND_RECEPTOR_INTERACTION&quot;</span>, <span class="st">&quot;COMPLEMENT_AND_COAGULATION_CASCADES&quot;</span>)]
+newGeneset.i &lt;-<span class="st"> </span>newGenesets[<span class="kw">c</span>(<span class="st">&quot;NEUROACTIVE_LIGAND_RECEPTOR_INTERACTION&quot;</span>,
+                              <span class="st">&quot;COMPLEMENT_AND_COAGULATION_CASCADES&quot;</span>)]
 
 ## The response is just the smoothed curves of these two genes
 yfd &lt;-<span class="st"> </span>fdexpr[gene.i]
@@ -276,11 +283,13 @@ xfd &lt;-<span class="st"> </span>FUNNEL:::<span class="kw">PCA.genesets</span>(
 equiv &lt;-<span class="st"> </span><span class="kw">equiv.regression</span>(yfd, xfd, <span class="dt">threshold =</span> <span class="fl">0.01</span>)
 equiv.Y &lt;-<span class="st"> </span>equiv$y; <span class="kw">colnames</span>(equiv.Y) &lt;-<span class="st"> </span>gene.i     <span class="co">#3x2 matrix</span>
 equiv.X &lt;-<span class="st"> </span>equiv$Xmat                               <span class="co">#3x6 matrix</span>
-<span class="kw">colnames</span>(equiv.X) &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">rep</span>(<span class="kw">names</span>(newGeneset.i), <span class="dt">each=</span><span class="dv">3</span>), <span class="kw">rep</span>(<span class="kw">paste0</span>(<span class="st">&quot;eigfun&quot;</span>, <span class="dv">1</span>:<span class="dv">3</span>), <span class="kw">length</span>(newGeneset.i)), <span class="dt">sep=</span><span class="st">&quot;.&quot;</span>)
+<span class="kw">colnames</span>(equiv.X) &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">rep</span>(<span class="kw">names</span>(newGeneset.i), <span class="dt">each=</span><span class="dv">3</span>), 
+                           <span class="kw">rep</span>(<span class="kw">paste0</span>(<span class="st">&quot;eigfun&quot;</span>, <span class="dv">1</span>:<span class="dv">3</span>), <span class="kw">length</span>(newGeneset.i)), <span class="dt">sep=</span><span class="st">&quot;.&quot;</span>)
 
 ## Now we can run multivariate elastinet regression on the equivalent X and Y, as
 ## implemented in package quadrupen
-en &lt;-<span class="st"> </span><span class="kw">elastic.net</span>(equiv.X, equiv.Y[, <span class="st">&quot;C3AR1&quot;</span>], <span class="dt">lambda1 =</span> <span class="fl">0.4</span>, <span class="dt">lambda2 =</span> <span class="fl">0.01</span>, <span class="dt">intercept =</span> <span class="ot">FALSE</span>, <span class="dt">normalize =</span> <span class="ot">FALSE</span>)
+en &lt;-<span class="st"> </span><span class="kw">elastic.net</span>(equiv.X, equiv.Y[, <span class="st">&quot;C3AR1&quot;</span>], 
+                  <span class="dt">lambda1 =</span> <span class="fl">0.4</span>, <span class="dt">lambda2 =</span> <span class="fl">0.01</span>, <span class="dt">intercept =</span> <span class="ot">FALSE</span>, <span class="dt">normalize =</span> <span class="ot">FALSE</span>)
 
 ## beta.en are the regression coefficients
 beta.en &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">attributes</span>(en)$coef)
@@ -298,11 +307,13 @@ xfd2 &lt;-<span class="st"> </span>FUNNEL:::<span class="kw">PCA.genesets</span>
 equiv2 &lt;-<span class="st"> </span><span class="kw">equiv.regression</span>(yfd, xfd2, <span class="dt">threshold =</span> <span class="fl">0.1</span>)
 equiv2.Y &lt;-<span class="st"> </span>equiv2$y; <span class="kw">colnames</span>(equiv2.Y) &lt;-<span class="st"> </span>gene.i     <span class="co">#3x2 matrix</span>
 equiv2.X &lt;-<span class="st"> </span>equiv2$Xmat                                <span class="co">#3x6 matrix</span>
-<span class="kw">colnames</span>(equiv2.X) &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">rep</span>(<span class="kw">names</span>(newGeneset.i), <span class="dt">each=</span><span class="dv">2</span>), <span class="kw">rep</span>(<span class="kw">paste0</span>(<span class="st">&quot;eigfun&quot;</span>, <span class="dv">1</span>:<span class="dv">2</span>), <span class="kw">length</span>(newGeneset.i)), <span class="dt">sep=</span><span class="st">&quot;.&quot;</span>)
+<span class="kw">colnames</span>(equiv2.X) &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">rep</span>(<span class="kw">names</span>(newGeneset.i), <span class="dt">each=</span><span class="dv">2</span>), 
+                            <span class="kw">rep</span>(<span class="kw">paste0</span>(<span class="st">&quot;eigfun&quot;</span>, <span class="dv">1</span>:<span class="dv">2</span>), <span class="kw">length</span>(newGeneset.i)), <span class="dt">sep=</span><span class="st">&quot;.&quot;</span>)
 
 ## Now we can run multivariate elastinet regression on the equivalent X and Y, as
 ## implemented in package quadrupen
-en2 &lt;-<span class="st"> </span><span class="kw">elastic.net</span>(equiv2.X, equiv2.Y[, <span class="st">&quot;C3AR1&quot;</span>], <span class="dt">lambda1 =</span> <span class="fl">0.4</span>, <span class="dt">lambda2 =</span> <span class="fl">0.01</span>, <span class="dt">intercept =</span> <span class="ot">FALSE</span>, <span class="dt">normalize =</span> <span class="ot">FALSE</span>)
+en2 &lt;-<span class="st"> </span><span class="kw">elastic.net</span>(equiv2.X, equiv2.Y[, <span class="st">&quot;C3AR1&quot;</span>], 
+                   <span class="dt">lambda1 =</span> <span class="fl">0.4</span>, <span class="dt">lambda2 =</span> <span class="fl">0.01</span>, <span class="dt">intercept =</span> <span class="ot">FALSE</span>, <span class="dt">normalize =</span> <span class="ot">FALSE</span>)
 
 ## beta.en are the regression coefficients
 beta.en2 &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">attributes</span>(en2)$coef)
@@ -332,29 +343,30 @@ result$pvals[<span class="st">&quot;GLYCOLYSIS_GLUCONEOGENESIS&quot;</span>]</co
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sessionInfo</span>()</code></pre></div>
 <pre><code>## R version 3.3.1 (2016-06-21)
 ## Platform: x86_64-apple-darwin13.4.0 (64-bit)
-## Running under: OS X 10.11.6 (El Capitan)
+## Running under: OS X 10.12.1 (Sierra)
 ## 
 ## locale:
 ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
 ## 
 ## attached base packages:
-## [1] splines   stats     graphics  grDevices utils     datasets  methods  
-## [8] base     
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] quadrupen_0.2-4 ggplot2_2.1.0   Rcpp_0.12.7     fda_2.4.4      
-## [5] Matrix_1.2-7.1  FUNNEL_0.1.3   
+## [1] FUNNEL_0.1.3
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] knitr_1.14         magrittr_1.5       MASS_7.3-45       
-##  [4] munsell_0.4.3      colorspace_1.2-6   lattice_0.20-34   
-##  [7] stringr_1.1.0      plyr_1.8.4         tools_3.3.1       
-## [10] parallel_3.3.1     grid_3.3.1         gtable_0.2.0      
-## [13] htmltools_0.3.5    yaml_2.1.13        digest_0.6.10     
-## [16] akima_0.5-12       RColorBrewer_1.1-2 reshape2_1.4.1    
-## [19] formatR_1.4        codetools_0.2-14   evaluate_0.9      
-## [22] rmarkdown_1.0      sp_1.2-3           pheatmap_1.0.8    
-## [25] stringi_1.1.1      scales_0.4.0</code></pre>
+##  [1] Rcpp_0.12.7        knitr_1.14         magrittr_1.5      
+##  [4] MASS_7.3-45        splines_3.3.1      munsell_0.4.3     
+##  [7] colorspace_1.2-6   lattice_0.20-34    quadrupen_0.2-4   
+## [10] fda_2.4.4          stringr_1.1.0      plyr_1.8.4        
+## [13] tools_3.3.1        parallel_3.3.1     grid_3.3.1        
+## [16] gtable_0.2.0       htmltools_0.3.5    yaml_2.1.13       
+## [19] lazyeval_0.2.0     digest_0.6.10      assertthat_0.1    
+## [22] tibble_1.2         Matrix_1.2-7.1     akima_0.5-12      
+## [25] RColorBrewer_1.1-2 reshape2_1.4.2     ggplot2_2.2.0     
+## [28] formatR_1.4        evaluate_0.9       rmarkdown_1.0     
+## [31] sp_1.2-3           pheatmap_1.0.8     stringi_1.1.1     
+## [34] scales_0.4.1</code></pre>
 </div>
 <div id="reference" class="section level1 unnumbered">
 <h1>Reference</h1>

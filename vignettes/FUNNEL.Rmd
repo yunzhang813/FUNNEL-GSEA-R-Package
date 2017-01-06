@@ -3,20 +3,22 @@ title: "FUNNEL-GSEA R Package"
 author: "Yun Zhang, Juilee Thakar, Xing Qiu"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+# output: pdf_document
 bibliography: bibliography.bib
 vignette: >
   %\VignetteIndexEntry{FUNNEL-GSEA R Package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
-```{r global_options, include=FALSE}
-knitr::opts_chunk$set(warning = FALSE, message = FALSE, cache = TRUE)
-```
                       
 # Introduction
 
-```{r package}
+```{r, package}
+## The package can be installed using the following code
+# library(devtools)
+# install_github("yunzhang813/FUNNEL-GSEA-R-Package")
+
+## Load the package
 library(FUNNEL)
 ```
 
@@ -33,11 +35,11 @@ In this vignette, we will introduce the one-step function for carrying out the F
 
 For convenience, a set of real temporal gene expression data is included in the `FUNNEL` package. Gene expression data of human influenza infection (@huang2011temporal) were downloaded from Gene Expression Omnibus series GSE52428. 17 healthy adults with live influenza (H3N2/Wisconsin) were examined and changes in host peripheral blood gene expression were collected at 16 time points over 132 hours. Among the 17 subjects, nine developed symptomatic infection and eight had asymptomatic infection. We include subject 1 (symptomatic) as sample data for illustration purpose.  These data were log2-transformed and pre-filtered by the IQR criterion (>=0.3).
 
-We also include 186 CP:KEGG pathways with a focus on human immuno-response to infectious diseases with the `FUNNEL` package.  These pathways are available from the [Broad Institute](http://software.broadinstitute.org/gsea/msigdb/collections.jsp). For studies that do not focus on immunology, an alternative list of pathways should be used instead.
+We also include 186 CP:KEGG pathways with a focus on human immuno-response to infectious diseases in the `FUNNEL` package.  These pathways are available from the [Broad Institute](http://software.broadinstitute.org/gsea/msigdb/collections.jsp). For studies that do not focus on immunology, an alternative list of pathways should be used instead.
 
 The sample data and pathways can be loaded by the following command.  The expression data is called `X`, which is a 11189x16 dimensional matrix.  A vector of ordered length 16, `tt`, is also provided with this package. It indicates the sampling time points of these data.  The 186 CP:KEGG pahtways are formatted as a data list called `genesets`. 
 
-```{r data}
+```{r, data, cache=TRUE}
 data("H3N2-Subj1")
 ```
 
@@ -49,7 +51,7 @@ The most user-friendly function provided by `FUNNEL` is `FUNNEL.GSEA()`. It inpu
 
 It takes about 5~10 minutes to run the following code on a modern laptop computer.
 
-```{r, onestep}
+```{r, onestep, cache=TRUE}
 system.time(result <- FUNNEL.GSEA(X, tt, genesets))
 ```
 
@@ -63,15 +65,15 @@ Once the computation is done, we will have a result list that contains the follo
 
 For Subject 1 (symptomatic), `FUNNEL.GSEA` identified the following significant gene sets that responded to the influenza infection. Many of these pathways listed here, such as the B cell receptor signaling, T cell receptor signaling, NOD-like signaling, RIG-I-like receptor signaling, Toll-like receptor signaling,  and FC-Epsilon-RI signaling are well documented immune signaling pathways that send signals that lead to the activation of various cell-specific immune activities.
 
-```{r, sig.genesets}
+```{r, sig.genesets, cache=TRUE}
 result$sig.genesets
 ```
 
 ### Altering default parameter settings
 
-Users may customize their own studies by varing the default setting in `FUNNEL.GSEA()`. Details about the default parameter setting can be found in `help("FUNNEL.GSEA")`. The following code is a simple example, which uses 2 eigenfunctions and different panelty values for the elastic-net regression. Many of the immune signaling pathways remain significant.
+Users may customize their own studies by varing the default settings in `FUNNEL.GSEA()`. Details about the default parameter settings can be found in `help("FUNNEL.GSEA")`. The following code is a simple example, which uses 2 eigenfunctions and different panelty values for the elastic-net regression. Many of the immune signaling pathways remain significant. (Default: `nharm=3, lam1=0.4, lam2=0.01`.)
 
-```{r, onestep-alter}
+```{r, onestep-alter, cache=TRUE}
 result2 <- FUNNEL.GSEA(X, tt, genesets, nharm=2, lam1=0.3, lam2=0.1)
 result2$sig.genesets
 ```
@@ -84,8 +86,9 @@ We developed the concept of "empirical gene set membership" (quantified by weigh
 
 If users are interested in some specific genes (for example, all the genes in the Primary Immunodeficiency pathway), the function `weightPerGene()` exracts the estimated weights (a.k.a. empirical gene set membership) from the `FUNNEL.GSEA` result.
 
-```{r weightPerGene}
-est.weights <- weightPerGene(result$weight.list, genesOfInterest=genesets[["PRIMARY_IMMUNODEFICIENCY"]])
+```{r, weightPerGene, cache=TRUE}
+est.weights <- weightPerGene(result$weight.list, 
+                             genesOfInterest=genesets[["PRIMARY_IMMUNODEFICIENCY"]])
 ```
 
 This function returns a list of length of `length(genesOfInterest)`. 
@@ -98,13 +101,13 @@ This function returns a list of length of `length(genesOfInterest)`.
 
 Users can also plot the (non-zero) weights (a.k.a. empirical gene set membership) for a specific gene set. The function `plotWeight()` produces a heatmap of weights based on the `FUNNEL.GSEA` result. For example, the following code plots the (non-trivial) empirical membership for the Primary Immunodeficiency pathway.
 
-```{r plotWeight,  fig.width=5, fig.height=6}
+```{r, plotWeight, fig.width=5, fig.height=6, cache=TRUE}
 plotWeight(result$weight.list, geneset.index="PRIMARY_IMMUNODEFICIENCY")
 ```
 
 We may see how the estimated weights are changed by varying the default setting.
 
-```{r plotWeight2,  fig.width=5, fig.height=8}
+```{r, plotWeight2, fig.width=5, fig.height=8, cache=TRUE}
 plotWeight(result2$weight.list, geneset.index="PRIMARY_IMMUNODEFICIENCY")
 ```
 
@@ -116,7 +119,7 @@ In this package, we also provide functions for performing the key parts of the F
 
 First of all, the following additional data processing is performed internally in `FUNNEL.GSEA()`.
 
-```{r data-process}
+```{r, data-process, cache=TRUE, message=FALSE}
 library(fda)
 
 ## Remove genes in predefined gene sets that are not present in X the filtered input data
@@ -134,7 +137,7 @@ mypar <- fdPar(mybasis, 2, lambda=10^-3.5)
 fdexpr <- smooth.basis(tt2, t(X2), mypar)$fd
 ```
 
-1. We recommend to standardize time (into [0,1] interval), so that the smoothing penalty is comparable across different data sets and the default value (`lambda=10^-3.5`) make sense in these situations. 
+1. We recommend to standardize time (into [0,1] interval), so that the smoothing penalty is comparable across different data sets and the default value (`lambda=10^-3.5`) makes sense in these situations. 
 2. We recommend the use of standardized (z-transformation) expression data for the gene set analysis because usually the "relationship" between genes is defined through the similarity of the shape, not the magnitude, of their expression patterns.
 3. We use functional data analysis framework (R package `fda`) to turn discrete expression data into smooth temporal expression functions (the R object `fdexpr`) that are needed for subsequent analyses.
 
@@ -143,7 +146,7 @@ fdexpr <- smooth.basis(tt2, t(X2), mypar)$fd
 
 The function `FPCA.Fstats()` takes time-course expression data and time points as input values. By using Functional Principal Component Analysis (FPCA) techniques, it returns the functional F-statistic for each gene. For more details, please refer to @wu2013more.
 
-```{r FPCA.Fstats}
+```{r, FPCA.Fstats, cache=TRUE}
 ## Get functional F-statistics
 Fstats <- FPCA.Fstats(X2, tt2)
 
@@ -176,14 +179,15 @@ and response `y`.  Running penalized (or ordinary least square)
 regression on `y` and `Xmat` is equivalent to the corresponding concurrent
 functional regression.
 
-```{r equiv.regression}
+```{r, equiv.regression, cache=TRUE, message=FALSE}
 library(quadrupen)
 
 ## Take genes C5AR1 and C3AR1 as two examples
 gene.i <- c("C5AR1", "C3AR1")
 
 ## They belong to the following two pathways
-newGeneset.i <- newGenesets[c("NEUROACTIVE_LIGAND_RECEPTOR_INTERACTION", "COMPLEMENT_AND_COAGULATION_CASCADES")]
+newGeneset.i <- newGenesets[c("NEUROACTIVE_LIGAND_RECEPTOR_INTERACTION",
+                              "COMPLEMENT_AND_COAGULATION_CASCADES")]
 
 ## The response is just the smoothed curves of these two genes
 yfd <- fdexpr[gene.i]
@@ -199,11 +203,13 @@ xfd <- FUNNEL:::PCA.genesets(fdexpr, newGeneset.i, nharm = 3, centerfns = FALSE)
 equiv <- equiv.regression(yfd, xfd, threshold = 0.01)
 equiv.Y <- equiv$y; colnames(equiv.Y) <- gene.i     #3x2 matrix
 equiv.X <- equiv$Xmat                               #3x6 matrix
-colnames(equiv.X) <- paste(rep(names(newGeneset.i), each=3), rep(paste0("eigfun", 1:3), length(newGeneset.i)), sep=".")
+colnames(equiv.X) <- paste(rep(names(newGeneset.i), each=3), 
+                           rep(paste0("eigfun", 1:3), length(newGeneset.i)), sep=".")
 
 ## Now we can run multivariate elastinet regression on the equivalent X and Y, as
 ## implemented in package quadrupen
-en <- elastic.net(equiv.X, equiv.Y[, "C3AR1"], lambda1 = 0.4, lambda2 = 0.01, intercept = FALSE, normalize = FALSE)
+en <- elastic.net(equiv.X, equiv.Y[, "C3AR1"], 
+                  lambda1 = 0.4, lambda2 = 0.01, intercept = FALSE, normalize = FALSE)
 
 ## beta.en are the regression coefficients
 beta.en <- as.numeric(attributes(en)$coef)
@@ -221,11 +227,13 @@ xfd2 <- FUNNEL:::PCA.genesets(fdexpr, newGeneset.i, nharm = 2, centerfns = FALSE
 equiv2 <- equiv.regression(yfd, xfd2, threshold = 0.1)
 equiv2.Y <- equiv2$y; colnames(equiv2.Y) <- gene.i     #3x2 matrix
 equiv2.X <- equiv2$Xmat                                #3x6 matrix
-colnames(equiv2.X) <- paste(rep(names(newGeneset.i), each=2), rep(paste0("eigfun", 1:2), length(newGeneset.i)), sep=".")
+colnames(equiv2.X) <- paste(rep(names(newGeneset.i), each=2), 
+                            rep(paste0("eigfun", 1:2), length(newGeneset.i)), sep=".")
 
 ## Now we can run multivariate elastinet regression on the equivalent X and Y, as
 ## implemented in package quadrupen
-en2 <- elastic.net(equiv2.X, equiv2.Y[, "C3AR1"], lambda1 = 0.4, lambda2 = 0.01, intercept = FALSE, normalize = FALSE)
+en2 <- elastic.net(equiv2.X, equiv2.Y[, "C3AR1"], 
+                   lambda1 = 0.4, lambda2 = 0.01, intercept = FALSE, normalize = FALSE)
 
 ## beta.en are the regression coefficients
 beta.en2 <- as.numeric(attributes(en2)$coef)
@@ -239,7 +247,7 @@ test group. Note that the pre-calculated correlation only applies to the
 test group (the gene set of interest).  The correlation of the
 background genes is assumed to be zero.  In the context of gene set analysis, these weights are called "empirical gene set membership" which is calculated by function `FUNNEL.GSEA()`.  Users can provide customized weight vectors to `wMWUTest()` to make inference about two-group comparisons.
 
-```{r wMWUTest}
+```{r, wMWUTest, cache=TRUE}
 gg1 <- newGenesets[["GLYCOLYSIS_GLUCONEOGENESIS"]]
 ww1 <- result$weight.list[["GLYCOLYSIS_GLUCONEOGENESIS"]]
 rho <- result$correlation
@@ -255,7 +263,7 @@ result$pvals["GLYCOLYSIS_GLUCONEOGENESIS"]
 
 # Session Info
 
-```{r sessionInfo}
+```{r, sessionInfo}
 sessionInfo()
 ```
 
