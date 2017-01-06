@@ -2,7 +2,7 @@
 title: "FUNNEL-GSEA R Package"
 author: "Yun Zhang, Juilee Thakar, Xing Qiu"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: rmarkdown::pdf_document
 # output: pdf_document
 bibliography: bibliography.bib
 vignette: >
