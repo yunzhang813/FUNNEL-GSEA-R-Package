@@ -16,7 +16,7 @@ vignette: >
 ```{r, package}
 ## The package can be installed using the following code
 # library(devtools)
-# install_github("yunzhang813/FUNNEL-GSEA-R-Package")
+# install_github("yunzhang813/FUNNEL-GSEA-R-Package", build_vignettes=TRUE)
 
 ## Load the package
 library(FUNNEL)
