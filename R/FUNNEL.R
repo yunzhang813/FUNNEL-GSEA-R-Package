@@ -126,7 +126,7 @@ FUNNELtest <- function(fdexpr, genesets, Fstats, rho, df, nharm=3, centerfns=FAL
     testset <- genesets[k] # list of length 1
     weight.k <- weight.mat[,names(testset)]
     weight <- weight.k[!is.na(weight.k)]
-    weight <- weight[unlist(testset)]
+    weight <- weight[unlist(testset)] #reorder
     test <- wMWUTest(test.index=unlist(testset), statistics=Fstats, weight=weight, correlation=rho, df=df)
     pvals[k] <- test["greater"]
     weight.list[[k]] <- weight
