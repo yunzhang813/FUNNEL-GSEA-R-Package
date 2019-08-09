@@ -42,6 +42,48 @@ smoothExpr <- function(X, tt, lambda=10^-3.5)
   return(fdobj)
 }
 
+#########################
+## FUNCTION: plotGCV() ##
+#########################
+
+plotGCV <- function(X, time, basis, training, loglam=seq(-6, 6, .5), plot=TRUE)
+  ### INPUT ###
+  # X: gene expression data
+  # basis: a saturated basis for given time points
+  # loglam: for different datasets, you probably want to use different
+  #         grid of loglams.  You can start with a really coarse grid,
+  #         such as seq(-6, 6, .5) as a starting point and then refine it.
+  # training: a "random" set of genes to train lambda, e.g. sample(rownames(X),100)
+  ### OUTPUT ###
+  # gcvs: vector of GCV values
+{	
+  ## determine the best lambda by GCV
+  K <- length(loglam)
+  gcvs <- rep(0, K); dfs <- rep(0, K)
+  for (k in 1:K){
+    lambda.k <- 10^loglam[k]
+    ## 2 means the penalty function is the square of the 2nd order
+    ## derivative, which makes W^{1,2} norm.
+    par.i <- fdPar(basis, 2, lambda=lambda.k)
+    curves.i <- smooth.basis(time, t(X[training,]), par.i)
+    gcvs[k] <- mean(curves.i$gcv); dfs[k] <- curves.i$df
+  }
+  ## plot
+  if(plot==TRUE){
+    par(mfrow=c(1,2))
+    kstar <- which.min(gcvs)
+    plot(loglam, gcvs,
+         xlab=expression(paste(plain(log)[10],lambda)), ylab="GCV")
+    points(loglam[kstar], gcvs[kstar], pch=16, col=2)
+    lines(loglam, gcvs)
+    plot(dfs, gcvs, xlab="Degrees of freedom", ylab="GCV")
+    points(dfs[kstar], gcvs[kstar], pch=16, col=2)
+    lines(dfs, gcvs)
+    par(mfrow=c(1,1))
+  }
+  ## output
+  return(gcvs)
+}
 
 #############################
 ## FUNCTION: PCA.genesets() ##

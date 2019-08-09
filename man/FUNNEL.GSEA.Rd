@@ -69,8 +69,7 @@ FUNNEL.GSEA(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)),
 }
 
 \details{
-  Technical details of this procedure is documented in \cite{Yun Zhang,
-  Juilee Thakar, Xing Qiu (2016)}.
+  Technical details of this procedure is documented in \cite{Zhang et al. (2017)}.
 }
 
 \value{
@@ -87,9 +86,9 @@ FUNNEL.GSEA(X, tt, genesets, lambda=10^-3.5, rr=rep(1,length(tt)),
 }
 
 \references{
-  \cite{Yun Zhang, Juilee Thakar, Xing Qiu (2016) FUNNEL-GSEA: FUNctioNal ELastic-net
-  Regression in Time-course Gene Set Enrichment Analysis, submitted to
-  Bioinformatics.}
+  \cite{Zhang, Y., Topham, D.J., Thakar, J. and Qiu, X. (2017). FUNNEL-GSEA:
+    FUNctioNal ELastic-net Regression in time-course Gene Set Enrichment
+    Analysis. \emph{Bioinformatics}, btx104.}
 }
 
 \author{

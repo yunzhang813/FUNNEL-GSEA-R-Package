@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Yun Zhang, Juilee Thakar, Xing Qiu" />
 
-<meta name="date" content="2017-01-28" />
+<meta name="date" content="2017-11-15" />
 
 <title>FUNNEL-GSEA R Package</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">FUNNEL-GSEA R Package</h1>
 <h4 class="author"><em>Yun Zhang, Juilee Thakar, Xing Qiu</em></h4>
-<h4 class="date"><em>2017-01-28</em></h4>
+<h4 class="date"><em>2017-11-15</em></h4>
 
 
 
@@ -82,7 +82,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 ## Load the package
 <span class="kw">library</span>(FUNNEL)</code></pre></div>
-<p>This R package is built for FUNNEL-GSEA. It is a statistical inference framework for Gene Set Enrichment Analysis (GSEA) based on FUNctioNal ELastic-net regression (FUNNEL), which utilizes the temporal information based on functional principal component analysis (FPCA), and disentangles the effects of <strong>overlapping</strong> genes by a functional extension of the elastic-net regression. It then performs hypothesis testing for gene sets by an extension of Mann-Whitney U test which is based on weighted rank sums computed from correlated observations.</p>
+<p>This R package is built for FUNNEL-GSEA <span class="citation">(Zhang et al. 2017)</span>. It is a statistical inference framework for Gene Set Enrichment Analysis (GSEA) based on FUNctioNal ELastic-net regression (FUNNEL), which utilizes the temporal information based on functional principal component analysis (FPCA), and disentangles the effects of <strong>overlapping</strong> genes by a functional extension of the elastic-net regression. It then performs hypothesis testing for gene sets by an extension of Mann-Whitney U test which is based on weighted rank sums computed from correlated observations.</p>
 <p>In this vignette, we will introduce the one-step function for carrying out the FUNNEL analysis, and also some useful functions contained in the FUNNEL framework.</p>
 <ul>
 <li>The one-step function, <code>FUNNEL.GSEA()</code>, takes pre-processed data and a list of gene sets as inputs and runs the whole testing procedure automatically. There are also some post-analysis tools such as <code>weightPerGene()</code> and <code>plotWeight()</code> that faciliates the interpretation and visulization of the FUNNEL result.</li>
@@ -93,7 +93,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h1>FUNNEL one-step function</h1>
 <div id="sample-data" class="section level2">
 <h2>Sample data</h2>
-<p>For convenience, a set of real temporal gene expression data is included in the <code>FUNNEL</code> package. Gene expression data of human influenza infection (<span class="citation">Huang et al. (2011)</span>) were downloaded from Gene Expression Omnibus series GSE52428. 17 healthy adults with live influenza (H3N2/Wisconsin) were examined and changes in host peripheral blood gene expression were collected at 16 time points over 132 hours. Among the 17 subjects, nine developed symptomatic infection and eight had asymptomatic infection. We include subject 1 (symptomatic) as sample data for illustration purpose. These data were log2-transformed and pre-filtered by the IQR criterion (&gt;=0.3).</p>
+<p>For convenience, a set of real temporal gene expression data is included in the <code>FUNNEL</code> package. Gene expression data of human influenza infection <span class="citation">(Huang et al. 2011)</span> were downloaded from Gene Expression Omnibus series GSE52428. 17 healthy adults with live influenza (H3N2/Wisconsin) were examined and changes in host peripheral blood gene expression were collected at 16 time points over 132 hours. Among the 17 subjects, nine developed symptomatic infection and eight had asymptomatic infection. We include subject 1 (symptomatic) as sample data for illustration purpose. These data were log2-transformed and pre-filtered by the IQR criterion (&gt;=0.3).</p>
 <p>We also include 186 CP:KEGG pathways with a focus on human immuno-response to infectious diseases in the <code>FUNNEL</code> package. These pathways are available from the <a href="http://software.broadinstitute.org/gsea/msigdb/collections.jsp">Broad Institute</a>. For studies that do not focus on immunology, an alternative list of pathways should be used instead.</p>
 <p>The sample data and pathways can be loaded by the following command. The expression data is called <code>X</code>, which is a 11189x16 dimensional matrix. A vector of ordered length 16, <code>tt</code>, is also provided with this package. It indicates the sampling time points of these data. The 186 CP:KEGG pahtways are formatted as a data list called <code>genesets</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;H3N2-Subj1&quot;</span>)</code></pre></div>
@@ -258,7 +258,7 @@ F_i = \frac{RSS_i^0 - RSS_i^1}{RSS_i^1},
 </div>
 <div id="an-equivalence-between-functional-and-multivariate-regression" class="section level3">
 <h3>An equivalence between functional and multivariate regression</h3>
-<p>One important computation shortcut we used in <code>FUNNEL</code> is the fact that there is a way to turn a (penalized) concurrent functional linear regression analysis into an <strong>equivalent</strong> multivariate linear regression. Technical details can be found in <span class="citation">Zhang, Thakar, and Qiu (2016)</span>, Supplementary Text, Section 2.</p>
+<p>One important computation shortcut we used in <code>FUNNEL</code> is the fact that there is a way to turn a (penalized) concurrent functional linear regression analysis into an <strong>equivalent</strong> multivariate linear regression. Technical details can be found in <span class="citation">Zhang et al. (2017)</span>, Supplementary Text, Section 2.</p>
 <p>The function <code>equiv.regression()</code> takes functional covariates <code>xfd</code> and response <code>yfd</code> as inputs, and returns a list of equivalent multivariate covariates <code>Xmat</code> and response <code>y</code>. Running penalized (or ordinary least square) regression on <code>y</code> and <code>Xmat</code> is equivalent to the corresponding concurrent functional regression.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(quadrupen)
 
@@ -340,10 +340,13 @@ result$pvals[<span class="st">&quot;GLYCOLYSIS_GLUCONEOGENESIS&quot;</span>]</co
 </div>
 <div id="session-info" class="section level1">
 <h1>Session Info</h1>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sessionInfo</span>()</code></pre></div>
-<pre><code>## R version 3.3.1 (2016-06-21)
-## Platform: x86_64-apple-darwin13.4.0 (64-bit)
-## Running under: OS X 10.12.2 (Sierra)
+<pre><code>## R version 3.4.1 (2017-06-30)
+## Platform: x86_64-apple-darwin15.6.0 (64-bit)
+## Running under: macOS Sierra 10.12.6
+## 
+## Matrix products: default
+## BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRlapack.dylib
 ## 
 ## locale:
 ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -355,21 +358,21 @@ result$pvals[<span class="st">&quot;GLYCOLYSIS_GLUCONEOGENESIS&quot;</span>]</co
 ## [1] FUNNEL_1.0.0
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.12.7        knitr_1.15.1       magrittr_1.5      
-##  [4] MASS_7.3-45        splines_3.3.1      munsell_0.4.3     
-##  [7] colorspace_1.2-6   lattice_0.20-34    quadrupen_0.2-4   
-## [10] fda_2.4.4          stringr_1.1.0      plyr_1.8.4        
-## [13] tools_3.3.1        parallel_3.3.1     grid_3.3.1        
-## [16] gtable_0.2.0       htmltools_0.3.5    assertthat_0.1    
+##  [1] Rcpp_0.12.12       knitr_1.17         magrittr_1.5      
+##  [4] MASS_7.3-47        splines_3.4.1      munsell_0.4.3     
+##  [7] colorspace_1.3-2   lattice_0.20-35    quadrupen_0.2-5   
+## [10] rlang_0.1.2        fda_2.4.7          stringr_1.2.0     
+## [13] plyr_1.8.4         tools_3.4.1        parallel_3.4.1    
+## [16] grid_3.4.1         gtable_0.2.0       htmltools_0.3.6   
 ## [19] yaml_2.1.14        lazyeval_0.2.0     rprojroot_1.2     
-## [22] digest_0.6.12      tibble_1.2         Matrix_1.2-7.1    
+## [22] digest_0.6.12      tibble_1.3.3       Matrix_1.2-11     
 ## [25] akima_0.6-2        RColorBrewer_1.1-2 reshape2_1.4.2    
-## [28] ggplot2_2.2.0      evaluate_0.10      rmarkdown_1.3     
-## [31] sp_1.2-4           pheatmap_1.0.8     stringi_1.1.1     
-## [34] scales_0.4.1       backports_1.0.5</code></pre>
+## [28] ggplot2_2.2.1      evaluate_0.10.1    rmarkdown_1.6     
+## [31] sp_1.2-5           pheatmap_1.0.8     stringi_1.1.5     
+## [34] compiler_3.4.1     scales_0.4.1       backports_1.1.0</code></pre>
 </div>
-<div id="reference" class="section level1 unnumbered">
-<h1>Reference</h1>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
 <div id="refs" class="references">
 <div id="ref-huang2011temporal">
 <p>Huang, Yongsheng, Aimee K Zaas, Arvind Rao, Nicolas Dobigeon, Peter J Woolf, Timothy Veldman, N Christine Øien, et al. 2011. “Temporal Dynamics of Host Molecular Responses Differentiate Symptomatic and Asymptomatic Influenza a Infection.” <em>PLoS Genet</em> 7 (8). Public Library of Science: e1002234.</p>
@@ -377,8 +380,8 @@ result$pvals[<span class="st">&quot;GLYCOLYSIS_GLUCONEOGENESIS&quot;</span>]</co
 <div id="ref-wu2013more">
 <p>Wu, Shuang, and Hulin Wu. 2013. “More Powerful Significant Testing for Time Course Gene Expression Data Using Functional Principal Component Analysis Approaches.” <em>BMC Bioinformatics</em> 14 (1). BioMed Central: 1.</p>
 </div>
-<div id="ref-zhang2016FUNNEL">
-<p>Zhang, Yun, Juilee Thakar, and Xing Qiu. 2016. “FUNNEL-Gsea: FUNctioNal Elastic-Net Regression in Time-Course Gene Set Enrichment Analysis.” <em>Submitted to Bioinformatics</em>.</p>
+<div id="ref-zhang2017funnel">
+<p>Zhang, Yun, David J Topham, Juilee Thakar, and Xing Qiu. 2017. “FUNNEL-Gsea: FUNctioNal Elastic-Net Regression in Time-Course Gene Set Enrichment Analysis.” <em>Bioinformatics</em>. Oxford University Press, btx104.</p>
 </div>
 </div>
 </div>
@@ -390,7 +393,7 @@ result$pvals[<span class="st">&quot;GLYCOLYSIS_GLUCONEOGENESIS&quot;</span>]</co
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

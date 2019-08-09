@@ -30,9 +30,9 @@ weightPerGene(weight.list, genesOfInterest)
 }
 
 \references{
-  Yun Zhang, Juilee Thakar, Xing Qiu (2016) FUNNEL-GSEA: FUNctioNal ELastic-net
-  Regression in time-course Gene Set Enrichment Analysis, submitted to
-  Bioinformatics.
+  \cite{Zhang, Y., Topham, D.J., Thakar, J. and Qiu, X. (2017). FUNNEL-GSEA:
+    FUNctioNal ELastic-net Regression in time-course Gene Set Enrichment
+    Analysis. \emph{Bioinformatics}, btx104.}
 }
 
 \author{

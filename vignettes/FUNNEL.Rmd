@@ -22,7 +22,7 @@ vignette: >
 library(FUNNEL)
 ```
 
-This R package is built for FUNNEL-GSEA. It is a statistical inference framework for Gene Set Enrichment Analysis (GSEA) based on FUNctioNal ELastic-net regression (FUNNEL), which utilizes the temporal information based on functional principal component analysis (FPCA), and disentangles the effects of **overlapping** genes by a functional extension of the elastic-net regression. It then performs hypothesis testing for gene sets by an extension of Mann-Whitney U test which is based on weighted rank sums computed from correlated observations.
+This R package is built for FUNNEL-GSEA [@zhang2017funnel]. It is a statistical inference framework for Gene Set Enrichment Analysis (GSEA) based on FUNctioNal ELastic-net regression (FUNNEL), which utilizes the temporal information based on functional principal component analysis (FPCA), and disentangles the effects of **overlapping** genes by a functional extension of the elastic-net regression. It then performs hypothesis testing for gene sets by an extension of Mann-Whitney U test which is based on weighted rank sums computed from correlated observations.
 
 In this vignette, we will introduce the one-step function for carrying out the FUNNEL analysis, and also some useful functions contained in the FUNNEL framework. 
 
@@ -33,7 +33,7 @@ In this vignette, we will introduce the one-step function for carrying out the F
 
 ## Sample data
 
-For convenience, a set of real temporal gene expression data is included in the `FUNNEL` package. Gene expression data of human influenza infection (@huang2011temporal) were downloaded from Gene Expression Omnibus series GSE52428. 17 healthy adults with live influenza (H3N2/Wisconsin) were examined and changes in host peripheral blood gene expression were collected at 16 time points over 132 hours. Among the 17 subjects, nine developed symptomatic infection and eight had asymptomatic infection. We include subject 1 (symptomatic) as sample data for illustration purpose.  These data were log2-transformed and pre-filtered by the IQR criterion (>=0.3).
+For convenience, a set of real temporal gene expression data is included in the `FUNNEL` package. Gene expression data of human influenza infection [@huang2011temporal] were downloaded from Gene Expression Omnibus series GSE52428. 17 healthy adults with live influenza (H3N2/Wisconsin) were examined and changes in host peripheral blood gene expression were collected at 16 time points over 132 hours. Among the 17 subjects, nine developed symptomatic infection and eight had asymptomatic infection. We include subject 1 (symptomatic) as sample data for illustration purpose.  These data were log2-transformed and pre-filtered by the IQR criterion (>=0.3).
 
 We also include 186 CP:KEGG pathways with a focus on human immuno-response to infectious diseases in the `FUNNEL` package.  These pathways are available from the [Broad Institute](http://software.broadinstitute.org/gsea/msigdb/collections.jsp). For studies that do not focus on immunology, an alternative list of pathways should be used instead.
 
@@ -171,7 +171,7 @@ where $RSS_i^0$ and $RSS_i^1$ are the residual sum of squares under the null and
 
 ### An equivalence between functional and multivariate regression
 
-One important computation shortcut we used in `FUNNEL` is the fact that there is a way to turn a (penalized) concurrent functional linear regression analysis into an **equivalent** multivariate linear regression.  Technical details can be found in @zhang2016FUNNEL, Supplementary Text, Section 2.
+One important computation shortcut we used in `FUNNEL` is the fact that there is a way to turn a (penalized) concurrent functional linear regression analysis into an **equivalent** multivariate linear regression.  Technical details can be found in @zhang2017funnel, Supplementary Text, Section 2.
 
 The function `equiv.regression()` takes functional covariates `xfd` and response `yfd` as
 inputs, and returns a list of equivalent multivariate covariates `Xmat`
@@ -263,8 +263,8 @@ result$pvals["GLYCOLYSIS_GLUCONEOGENESIS"]
 
 # Session Info
 
-```{r, sessionInfo}
+```{r, sessionInfo, echo=FALSE}
 sessionInfo()
 ```
 
-# Reference
+# References

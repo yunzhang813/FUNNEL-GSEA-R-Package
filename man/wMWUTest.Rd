@@ -36,10 +36,7 @@ wMWUTest(test.index, statistics, weight=NULL, correlation=0, df=Inf)
 }
 
 \details{
-  Technical details of this test is documented in Yun Zhang,
-  Juilee Thakar, Xing Qiu (2016) FUNNEL-GSEA: FUNctioNal ELastic-net
-  Regression in time-course Gene Set Enrichment Analysis, submitted to
-  Bioinformatics.
+  Technical details of this test is documented in \cite{Zhang et al. (2017)}.
 }
 
 \value{
@@ -51,14 +48,13 @@ wMWUTest(test.index, statistics, weight=NULL, correlation=0, df=Inf)
   \cite{Barry, W.T., Nobel, A.B., and Wright, F.A. (2008).
     A statistical framework for testing functional categories in microarray data. \emph{Annals of Applied Statistics}, 286-315.}
   
-  \cite{Wu, D, and Smyth, GK (2012). Camera: a competitive gene set test
+  \cite{Wu, D., and Smyth, G.K. (2012). Camera: a competitive gene set test
     accounting for inter-gene correlation. \emph{Nucleic Acids Research},
     40(17), e133-e133.}
   
-  \cite{Yun Zhang, Juilee Thakar, Xing Qiu (2016) FUNNEL-GSEA:
+  \cite{Zhang, Y., Topham, D.J., Thakar, J. and Qiu, X. (2017). FUNNEL-GSEA:
     FUNctioNal ELastic-net Regression in time-course Gene Set Enrichment
-    Analysis. Submitted to Bioinformatics.
-  }
+    Analysis. \emph{Bioinformatics}, btx104.}
 }
 
 \author{
