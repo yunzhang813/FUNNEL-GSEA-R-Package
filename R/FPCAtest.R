@@ -404,7 +404,7 @@ gcv_mullwlsn = function(tt,ngrid=30,miss=1,error=1,kern=c("gauss","epan","rect",
                #it seems to me that only linear interpolation works
                #do not allow extrapolation
                ## require(akima)
-               newxcov =interpp(o21[,1],o21[,2],xcov,tpairn[1,],tpairn[2,])$z
+               newxcov =suppressWarnings(interpp(o21[,1],o21[,2],xcov,tpairn[1,],tpairn[2,])$z)
 
                rm(xcov)
                if(miss == 1){
